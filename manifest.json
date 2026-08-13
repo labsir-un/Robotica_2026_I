@@ -1,0 +1,492 @@
+{
+  "repositories": [
+    {
+      "category": "Profesor",
+      "folder": "01_Rob_2026_I_Intro_Ubuntu_24.04",
+      "source_zip": "01_Rob_2026_I_Intro_Ubuntu_24.04-main(1).zip",
+      "markdown_files": 1,
+      "copied_files": 2,
+      "copied_mb": 0.02,
+      "broken_local_refs": 0
+    },
+    {
+      "category": "Profesor",
+      "folder": "02_Rob_2026_I_Intro_ROS2_Jazzy",
+      "source_zip": "02_Rob_2026_I_Intro_ROS2_Jazzy-main(2).zip",
+      "markdown_files": 1,
+      "copied_files": 2,
+      "copied_mb": 0.01,
+      "broken_local_refs": 0
+    },
+    {
+      "category": "Profesor",
+      "folder": "03_Rob_2026_I_ROS2_Jazzy_Turtlesim",
+      "source_zip": "03_Rob_2026_I_ROS2_Jazzy_Turtlesim-main(2).zip",
+      "markdown_files": 1,
+      "copied_files": 2,
+      "copied_mb": 0.01,
+      "broken_local_refs": 0
+    },
+    {
+      "category": "Profesor",
+      "folder": "04_Rob_2026_I_ROS2_Jazzy_Architecture",
+      "source_zip": "04_Rob_2026_I_ROS2_Jazzy_Architecture-main(2).zip",
+      "markdown_files": 1,
+      "copied_files": 2,
+      "copied_mb": 0.02,
+      "broken_local_refs": 0
+    },
+    {
+      "category": "Profesor",
+      "folder": "05_Rob_2026_I_ROS2_Jazzy_TurtleBot3",
+      "source_zip": "05_Rob_2026_I_ROS2_Jazzy_TurtleBot3-main(2).zip",
+      "markdown_files": 1,
+      "copied_files": 2,
+      "copied_mb": 0.04,
+      "broken_local_refs": 0
+    },
+    {
+      "category": "Profesor",
+      "folder": "06_Rob_2026_I_ROS2_Jazzy_PhantomX100_RVIZ",
+      "source_zip": "06_Rob_2026_I_ROS2_Jazzy_PhantomX100_RVIZ-main(1).zip",
+      "markdown_files": 1,
+      "copied_files": 2,
+      "copied_mb": 0.09,
+      "broken_local_refs": 0
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1A-Montes-Rivera",
+      "source_zip": "Robotica-2026-I-Equipo-1A-Montes-Rivera-main(1).zip",
+      "markdown_files": 10,
+      "copied_files": 56,
+      "copied_mb": 12.36,
+      "broken_local_refs": 4
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1B-Benitez-Salamanca",
+      "source_zip": "Robotica-2026-I-Equipo-1B-Benitez-Salamanca-main(1).zip",
+      "markdown_files": 12,
+      "copied_files": 79,
+      "copied_mb": 28.8,
+      "broken_local_refs": 5
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1C-Alvarez-Ojeda",
+      "source_zip": "Robotica-2026-I-Equipo-1C-Alvarez-Ojeda-main.zip",
+      "markdown_files": 7,
+      "copied_files": 115,
+      "copied_mb": 60.7,
+      "broken_local_refs": 7
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "source_zip": "Robotica-2026-I-Equipo-1E-Carreno-Hoyos-Zapata-main.zip",
+      "markdown_files": 11,
+      "copied_files": 108,
+      "copied_mb": 68.28,
+      "broken_local_refs": 9
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2A-Monroy-Saenz",
+      "source_zip": "Robotica-2026-I-Equipo-2A-Monroy-Saenz-main(1).zip",
+      "markdown_files": 15,
+      "copied_files": 65,
+      "copied_mb": 6.83,
+      "broken_local_refs": 1
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2B-Pinzon-Quiroga-Sanchez",
+      "source_zip": "Robotica-2026-I-Equipo-2B-Pinzon-Quiroga-Sanchez-main.zip",
+      "markdown_files": 8,
+      "copied_files": 124,
+      "copied_mb": 37.33,
+      "broken_local_refs": 2
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2C-Castro-Morales-Arcila",
+      "source_zip": "Robotica-2026-I-Equipo-2C-Castro-Morales-Arcila-main.zip",
+      "markdown_files": 8,
+      "copied_files": 64,
+      "copied_mb": 16.29,
+      "broken_local_refs": 1
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2D-Cardenas-Pirateque-Suarez",
+      "source_zip": "Robotica-2026-I-Equipo-2D-Cardenas-Pirateque-Suarez-main(1).zip",
+      "markdown_files": 26,
+      "copied_files": 174,
+      "copied_mb": 43.29,
+      "broken_local_refs": 2
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2E-Mora-Pacheco-Pinilla",
+      "source_zip": "Robotica-2026-I-Equipo-2E-Mora-Pacheco-Pinilla-main(1).zip",
+      "markdown_files": 9,
+      "copied_files": 64,
+      "copied_mb": 31.46,
+      "broken_local_refs": 4
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3A-Arevalo-Lopez",
+      "source_zip": "Robotica-2026-I-Equipo-3A-Arevalo-Lopez-main.zip",
+      "markdown_files": 23,
+      "copied_files": 104,
+      "copied_mb": 17.47,
+      "broken_local_refs": 2
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3B-Bojaca-Morillo",
+      "source_zip": "Robotica-2026-I-Equipo-3B-Bojaca-Morillo-main.zip",
+      "markdown_files": 8,
+      "copied_files": 40,
+      "copied_mb": 7.47,
+      "broken_local_refs": 2
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "source_zip": "Robotica-2026-I-Equipo-3C-Moreno-Ramos-main(1).zip",
+      "markdown_files": 10,
+      "copied_files": 91,
+      "copied_mb": 15.4,
+      "broken_local_refs": 10
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3D-Mendoza-Tique",
+      "source_zip": "Robotica-2026-I-Equipo-3D-Mendoza-Tique-main(1).zip",
+      "markdown_files": 24,
+      "copied_files": 58,
+      "copied_mb": 3.32,
+      "broken_local_refs": 1
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3E-Diaz-Pulido",
+      "source_zip": "Robotica-2026-I-Equipo-3E-Diaz-Pulido-main(1).zip",
+      "markdown_files": 8,
+      "copied_files": 74,
+      "copied_mb": 10.63,
+      "broken_local_refs": 1
+    }
+  ],
+  "broken_local_refs": [
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1A-Montes-Rivera",
+      "readme": "Proyecto-Final/README.md",
+      "target": "scripts/phantom_sorting.service"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1A-Montes-Rivera",
+      "readme": "Proyecto-Final/README.md",
+      "target": "scripts/sync_to_pi.sh"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1A-Montes-Rivera",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante1.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1A-Montes-Rivera",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante2.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1B-Benitez-Salamanca",
+      "readme": "Laboratorio No. 05 - Robótica de Desarrollo ROS Jazzy y Phantom Pincher X100/Diagramas-Imágenes/Plano/readme.md",
+      "target": "Diagramas-Imágenes/Actividad13_eliminar.gif"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1B-Benitez-Salamanca",
+      "readme": "Laboratorio No. 05 - Robótica de Desarrollo ROS Jazzy y Phantom Pincher X100/README.MD",
+      "target": "Diagramas-Imágenes/act_9.gif"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1B-Benitez-Salamanca",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante1.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1B-Benitez-Salamanca",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante2.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1B-Benitez-Salamanca",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante3.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1C-Alvarez-Ojeda",
+      "readme": "Laboratorio No. 02 - Robótica Industrial Motoman MH6 y RoboDK/README.MD",
+      "target": "Código%20python/RosPolar_1.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1C-Alvarez-Ojeda",
+      "readme": "Laboratorio No. 05 - Robótica de Desarrollo ROS Jazzy y Phantom Pincher X100/README.MD",
+      "target": "./Codes/actividad9_interpolacion.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1C-Alvarez-Ojeda",
+      "readme": "Laboratorio No. 06 - Robótica de Desarrollo ROS Jazzy y Control Servovisual/README.MD",
+      "target": "docs/diagrama_geometrico.png"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1C-Alvarez-Ojeda",
+      "readme": "Laboratorio No. 06 - Robótica de Desarrollo ROS Jazzy y Control Servovisual/README.MD",
+      "target": "docs/grafica_calibracion.png"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1C-Alvarez-Ojeda",
+      "readme": "Laboratorio No. 06 - Robótica de Desarrollo ROS Jazzy y Control Servovisual/README.MD",
+      "target": "docs/grafica_interpolacion.png"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1C-Alvarez-Ojeda",
+      "readme": "Laboratorio No. 06 - Robótica de Desarrollo ROS Jazzy y Control Servovisual/README.MD",
+      "target": "docs/grafica_sinusoidal.png"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1C-Alvarez-Ojeda",
+      "readme": "Laboratorio No. 06 - Robótica de Desarrollo ROS Jazzy y Control Servovisual/README.MD",
+      "target": "docs/plano_planta.png"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Laboratorio No. 04 - Robótica de Desarrollo ROS Jazzy y Turtlesim/README.MD",
+      "target": "code/move_turtle.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Proyecto Final/README.MD",
+      "target": "scripts/phantom_sorting.service"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Proyecto Final/README.MD",
+      "target": "scripts/sync_to_pi.sh"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Proyecto Final/README.MD",
+      "target": "src/pincher_control/pincher_control/vacuum_relay_node.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Proyecto Final/README.MD",
+      "target": "src/pincher_description/urdf/suction_cup.xacro"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Proyecto Final/README.MD",
+      "target": "src/pincher_hmi/pincher_hmi/hmi_gui.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Proyecto Final/README.MD",
+      "target": "src/pincher_sorting/launch/master_autonomous.launch.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Proyecto Final/README.MD",
+      "target": "src/pincher_sorting/pincher_sorting/sorting_node.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-1E-Carreno-Hoyos-Zapata",
+      "readme": "Proyecto Final/README.MD",
+      "target": "src/pincher_sorting/pincher_sorting/vision_node.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2A-Monroy-Saenz",
+      "readme": "Laboratorio No. 05 - Robótica de Desarrollo ROS Jazzy y Phantom Pincher X100/README.MD",
+      "target": "join_limits-MD"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2B-Pinzon-Quiroga-Sanchez",
+      "readme": "Proyecto Final/README.md",
+      "target": "./Anexos/Plano_Planta.pdf"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2B-Pinzon-Quiroga-Sanchez",
+      "readme": "Proyecto Final/README.md",
+      "target": "Anexos/Esquematico-v1.pdf"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2C-Castro-Morales-Arcila",
+      "readme": "Laboratorio No. 05 - Robótica de Desarrollo ROS Jazzy y Phantom Pincher X100/README.MD",
+      "target": "./pincher_lab/actividad10_sinusoidal.py"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2D-Cardenas-Pirateque-Suarez",
+      "readme": "Proyecto Final Robotica Industrial - Etapa1/README.md",
+      "target": "./Anexos/Plano_Planta.pdf"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2D-Cardenas-Pirateque-Suarez",
+      "readme": "Proyecto Final Robotica Industrial - Etapa1/README.md",
+      "target": "Anexos/Esquematico-v1.pdf"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2E-Mora-Pacheco-Pinilla",
+      "readme": "Laboratorio No. 02 - Robótica Industrial Motoman MH6 y RoboDK/README.MD",
+      "target": "./LICENSE"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2E-Mora-Pacheco-Pinilla",
+      "readme": "Laboratorio No. 03 - Robótica Industrial EPSON T3 401S y EPSON RC+/README.MD",
+      "target": "./LICENSE"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2E-Mora-Pacheco-Pinilla",
+      "readme": "Laboratorio No. 04 - Robótica de Desarrollo ROS Jazzy y Turtlesim/README.md",
+      "target": "./LICENSE"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-2E-Mora-Pacheco-Pinilla",
+      "readme": "Laboratorio No. 05 - Robótica de Desarrollo ROS Jazzy y Phantom Pincher X100/README.MD",
+      "target": "./LICENSE"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3A-Arevalo-Lopez",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante1.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3A-Arevalo-Lopez",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante2.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3B-Bojaca-Morillo",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante1.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3B-Bojaca-Morillo",
+      "readme": "README.md",
+      "target": "./assets/integrantes/integrante2.jpg"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Laboratorio No. 02 - Robótica Industrial Motoman MH6 y RoboDK/README.MD",
+      "target": "Jumorenobe"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Laboratorio No. 02 - Robótica Industrial Motoman MH6 y RoboDK/README.MD",
+      "target": "MateoKGR"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Laboratorio No. 03 - Robótica Industrial EPSON T3 401S y EPSON RC+/README.MD",
+      "target": "Jumorenobe"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Laboratorio No. 03 - Robótica Industrial EPSON T3 401S y EPSON RC+/README.MD",
+      "target": "MateoKGR"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Laboratorio No. 04 - Robótica de Desarrollo ROS Jazzy y Turtlesim/README.MD",
+      "target": "Jumorenobe"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Laboratorio No. 04 - Robótica de Desarrollo ROS Jazzy y Turtlesim/README.MD",
+      "target": "MateoKGR"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Laboratorio No. 05 - Robótica de Desarrollo ROS Jazzy y Phantom Pincher X100/README.MD",
+      "target": "Jumorenobe"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Laboratorio No. 05 - Robótica de Desarrollo ROS Jazzy y Phantom Pincher X100/README.MD",
+      "target": "MateoKGR"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Proyecto Final - Robótica Industrial/README.MD",
+      "target": "Jumorenobe"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3C-Moreno-Ramos",
+      "readme": "Proyecto Final - Robótica Industrial/README.MD",
+      "target": "MateoKGR"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3D-Mendoza-Tique",
+      "readme": "Laboratorio No. 01 - Robótica Industrial ABB IRB140 y RobotStudio/README.MD",
+      "target": "/PlanoPlanta.pdf"
+    },
+    {
+      "category": "Estudiantes",
+      "folder": "Equipo-3E-Diaz-Pulido",
+      "readme": "Laboratorio No. 04 - Robótica de Desarrollo ROS Jazzy y Turtlesim/README.MD",
+      "target": "media/Ros2topicechoturtle1pose.png.png"
+    }
+  ]
+}
