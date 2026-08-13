@@ -1,0 +1,2 @@
+point_id,x_target_m,y_target_m,z_target_m,theta_target_deg,reachable,selected_label,q1_waist_deg,q2_shoulder_deg,q3_elbow_deg,q4_wrist_deg,position_error_m,pitch_error_deg,reason
+1,0.5,0.0,0.3,0.0,False,,,,,,,,"Punto no alcanzable. Distancia al centro de muñeca D=0.5083 m, rango permitido [0.0048, 0.2068] m."

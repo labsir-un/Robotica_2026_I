@@ -1,0 +1,2 @@
+point_id,x_target_m,y_target_m,z_target_m,theta_target_deg,reachable,selected_label,q1_waist_deg,q2_shoulder_deg,q3_elbow_deg,q4_wrist_deg,position_error_m,pitch_error_deg,reason
+1,0.0,0.2827,0.1642,-55.0,True,codo_arriba,90.0,96.35516505129698,-35.36481478867005,-5.99035026262693,5.814754727004229e-17,0.0,Punto alcanzable.

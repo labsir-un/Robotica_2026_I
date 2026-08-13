@@ -1,0 +1,21 @@
+Actividad 8 - Comparación movimiento secuencial vs simultáneo
+Configuración objetivo: [25.0, 25.0, 20.0, -20.0, 0.0]
+Velocidad/Profile Velocity: 20
+Tolerancia de llegada: 2.0 deg
+
+Tiempo total secuencial: 9.087 s
+  Paso 1 (waist): 2.147 s
+  Paso 2 (shoulder): 2.066 s
+  Paso 3 (elbow): 1.667 s
+  Paso 4 (wrist): 1.826 s
+  Paso 5 (gripper): 0.118 s
+
+Tiempo total simultáneo: 2.349 s
+Simultáneo alcanzó pose: True
+Error máximo final simultáneo: 1.100 deg
+
+Relación secuencial/simultáneo: 3.868
+Reducción de tiempo con simultáneo: 6.738 s
+
+Interpretación sugerida:
+El movimiento secuencial tarda más porque cada articulación espera a llegar antes de mover la siguiente. El movimiento simultáneo tarda menos porque todas las articulaciones se desplazan hacia la configuración objetivo al mismo tiempo. La trayectoria del TCP en el movimiento secuencial queda dividida por tramos, mientras que en el simultáneo resulta más compacta, aunque no necesariamente cartesiana.
