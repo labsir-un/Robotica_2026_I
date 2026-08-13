@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <!-- ========================================== -->
+  <!-- 🎨 Materiales para Herramienta Gripper     -->
+  <!-- ========================================== -->
+  <material name="blue_tool">
+    <color rgba="0.1 0.4 0.9 1.0"/>
+  </material>
+
+  <material name="rubber_black">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+
+  <material name="brass_metal">
+    <color rgba="0.8 0.7 0.2 1.0"/>
+  </material>
+
+  <!-- ========================================== -->
+  <!-- 🧲 Suction Cup Tool (Ensamble Fixed Real)  -->
+  <!-- ========================================== -->
+  <xacro:macro name="suction_cup_tool" params="prefix parent xyz:='0 0 0' rpy:='0 0 0' ext_xyz:='-0.006 0.037 0.016' ext_rpy:='${pi} ${pi/2} ${pi}' arm_xyz:='-0.075 -0.037 0.016' arm_rpy:='0 ${pi} 0' chupa_xyz:='0 0.004 0.01' chupa_rpy:='0 ${pi/2} 0'">
+
+    <!-- ========================================================= -->
+    <!-- PIEZA 1: Anclaje del Gripper (anclajeGripper.stl)         -->
+    <!-- Montaje azul sobre el servo AX-12                         -->
+    <!-- ========================================================= -->
+    <link name="${prefix}suction_cup_anclaje_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://pincher_description/meshes/anclajeGripper.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="blue_tool"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://pincher_description/meshes/anclajeGripper.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}suction_cup_anclaje_joint" type="fixed">
+      <parent link="${prefix}${parent}"/>
+      <child link="${prefix}suction_cup_anclaje_link"/>
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </joint>
+
+
+    <!-- ========================================================= -->
+    <!-- PIEZA 2: Extensión en L (extensionGripper.stl)            -->
+    <!-- Brazo azul que sostiene el acople                         -->
+    <!-- ========================================================= -->
+    <link name="${prefix}suction_cup_extension_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://pincher_description/meshes/extensionGripper.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="blue_tool"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://pincher_description/meshes/extensionGripper.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}suction_cup_extension_joint" type="fixed">
+      <parent link="${prefix}suction_cup_anclaje_link"/>
+      <child link="${prefix}suction_cup_extension_link"/>
+      <origin xyz="${ext_xyz}" rpy="${ext_rpy}"/>
+    </joint>
+
+
+    <!-- ========================================================= -->
+    <!-- PIEZA 3: Soporte/Acople Ventosa (armSuctionCup.stl)       -->
+    <!-- Acople azul final para el fiting neumático                -->
+    <!-- ========================================================= -->
+    <link name="${prefix}suction_cup_arm_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://pincher_description/meshes/armSuctionCup.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="blue_tool"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://pincher_description/meshes/armSuctionCup.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}suction_cup_arm_joint" type="fixed">
+      <parent link="${prefix}suction_cup_extension_link"/>
+      <child link="${prefix}suction_cup_arm_link"/>
+      <origin xyz="${arm_xyz}" rpy="${arm_rpy}"/>
+    </joint>
+
+
+    <!-- ========================================================= -->
+    <!-- PIEZA 4: Ventosa Neumática / Chupa (JXD-PAK-15)           -->
+    <!-- Acople metálico + Ventosa de succión en la punta          -->
+    <!-- ========================================================= -->
+    <link name="${prefix}suction_cup_chupa_link">
+      <!-- Conector / Fiting Neumático Metálico -->
+      <visual>
+        <origin xyz="0 0 0.008" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.016" radius="0.006"/>
+        </geometry>
+        <material name="brass_metal"/>
+      </visual>
+      <!-- Copa de Succión de Goma (Chupa Ventosa) -->
+      <visual>
+        <origin xyz="0 0 0.018" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.005" radius="0.010"/>
+        </geometry>
+        <material name="blue_tool"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.012" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.024" radius="0.010"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}suction_cup_chupa_joint" type="fixed">
+      <parent link="${prefix}suction_cup_arm_link"/>
+      <child link="${prefix}suction_cup_chupa_link"/>
+      <origin xyz="${chupa_xyz}" rpy="${chupa_rpy}"/>
+    </joint>
+
+    <!-- ========================================================= -->
+    <!-- 🎯 TCP / EEF (Tool Center Point - Punto de Contacto)      -->
+    <!-- Punto tridimensional exacto donde la ventosa agarra        -->
+    <!-- ========================================================= -->
+    <link name="${prefix}suction_tip_tcp"/>
+    <joint name="${prefix}suction_tip_tcp_joint" type="fixed">
+      <parent link="${prefix}suction_cup_chupa_link"/>
+      <child link="${prefix}suction_tip_tcp"/>
+      <origin xyz="0 0 0.0205" rpy="0 0 0"/>
+    </joint>
+
+  </xacro:macro>
+
+</robot>
