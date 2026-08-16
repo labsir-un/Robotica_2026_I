@@ -1,0 +1,37 @@
+{
+  "base": {
+    "extremo_inferior": -150.0,
+    "extremo_superior": 150.0,
+    "limite_inferior": -145.0,
+    "limite_superior": 145.0,
+    "margen_seguridad": 5.0
+  },
+  "hombro": {
+    "extremo_inferior": -100.0,
+    "extremo_superior": 100.0,
+    "limite_inferior": -96.0,
+    "limite_superior": 96.0,
+    "margen_seguridad": 4.0
+  },
+  "codo": {
+    "extremo_inferior": -144.0,
+    "extremo_superior": 150.0,
+    "limite_inferior": -138.0,
+    "limite_superior": 144.0,
+    "margen_seguridad": 6.0
+  },
+  "muneca": {
+    "extremo_inferior": -110.0,
+    "extremo_superior": 124.0,
+    "limite_inferior": -106.0,
+    "limite_superior": 120.0,
+    "margen_seguridad": 4.0
+  },
+  "pinza": {
+    "extremo_inferior": -40.0,
+    "extremo_superior": 40.0,
+    "limite_inferior": -35.0,
+    "limite_superior": 35.0,
+    "margen_seguridad": 5.0
+  }
+}

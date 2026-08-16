@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Etapa 4 — ABB IRB 140 "Abel" — Presentacion</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e14;--surface:#131820;--accent:#00b4d8;--accent2:#0077b6;--ok:#00e676;
+  --warn:#ffb300;--err:#ff1744;--text:#e0e0e0;--text2:#8892a4;--radius:14px;
+  --font:'Segoe UI','Inter',system-ui,sans-serif;--mono:'Cascadia Code',monospace;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden;height:100vh}
+.slides{width:100%;height:100%;position:relative}
+.slide{
+  position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:60px 80px;
+  opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(.4,0,.2,1);pointer-events:none;
+}
+.slide.active{opacity:1;transform:translateY(0);pointer-events:all}
+.slide h1{font-size:42px;font-weight:700;text-align:center;background:linear-gradient(135deg,var(--accent),var(--ok));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px}
+.slide h2{font-size:28px;font-weight:600;text-align:center;color:var(--accent);margin-bottom:24px}
+.slide h3{font-size:20px;color:var(--text2);margin-bottom:12px}
+.slide p{font-size:16px;color:var(--text2);text-align:center;max-width:800px;line-height:1.6}
+.big-num{font-family:var(--mono);font-size:72px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:30px;width:100%;max-width:1000px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;width:100%;max-width:1000px}
+.card{
+  background:var(--surface);border:1px solid #1e2a3a;border-radius:var(--radius);padding:24px;
+  text-align:center;transition:all .3s
+}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card h4{color:var(--accent);font-size:15px;margin-bottom:8px}
+.card p{font-size:13px;color:var(--text2);line-height:1.5}
+.dot-row{display:flex;gap:16px;align-items:center}
+.dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.dot.g{background:var(--ok);box-shadow:0 0 12px var(--ok)}.dot.r{background:var(--err);box-shadow:0 0 12px var(--err)}
+.dot.b{background:var(--accent);box-shadow:0 0 12px var(--accent)}
+.tag{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600}
+.tag-ok{background:#00e67620;color:var(--ok)}.tag-accent{background:#00b4d820;color:var(--accent)}
+.nav{position:fixed;bottom:24px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:16px;z-index:10}
+.nav button{
+  background:var(--surface);border:1px solid #252b3a;color:var(--text);padding:10px 24px;
+  border-radius:20px;cursor:pointer;font-family:var(--font);font-size:14px;transition:all .2s
+}
+.nav button:hover{border-color:var(--accent);color:var(--accent)}
+.nav .dots{display:flex;gap:8px}
+.nav .dots span{width:8px;height:8px;border-radius:50%;background:#252b3a;transition:all .3s}
+.nav .dots span.active{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--ok));transition:width .4s;z-index:10}
+/* Gripper anim */
+.gripper{display:flex;gap:0;align-items:center;justify-content:center;position:relative;height:120px}
+.jaw{width:36px;height:80px;background:linear-gradient(180deg,#2a3345,#1a2030);border-radius:6px 6px 2px 2px;border:2px solid #3a4558;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.jaw.l{transform-origin:right center}.jaw.r{transform-origin:left center}
+.jaw.closed.l{transform:translateX(14px)}.jaw.closed.r{transform:translateX(-14px)}
+.pcb-piece{position:absolute;width:60px;height:8px;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:2px;box-shadow:0 0 16px #22c55e60;transition:opacity .4s;opacity:0;z-index:-1}
+.pcb-piece.show{opacity:1}
+/* Timeline */
+.timeline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.tl-step{
+  padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;
+  background:var(--surface);color:var(--text3);border:1px solid #252b3a;
+}
+.tl-step.hi{background:var(--accent);color:#000;border-color:var(--accent);box-shadow:0 0 16px var(--accent)40}
+.tl-arr{color:var(--text3);font-size:18px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.anim-in{animation:fadeUp .6s ease}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}.pulse{animation:pulse 2s infinite}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<div class="slides" id="slides">
+
+  <!-- Slide 0: Portada -->
+  <div class="slide active" data-slide="0">
+    <div style="font-size:14px;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px">Robotica Industrial 2026-I</div>
+    <h1>Etapa 4: Embalaje y Envio por Banda</h1>
+    <h2>ABB IRB 140 &quot;Abel&quot;</h2>
+    <div style="display:flex;gap:30px;margin-top:30px;flex-wrap:wrap;justify-content:center">
+      <div class="card"><h4>Objetivo</h4><p>Automatizar recepcion, empaque y envio de PCBs cerrando la linea de ensamblaje</p></div>
+      <div class="card"><h4>Robot</h4><p>ABB IRB 140 &bull; Controlador IRC5 &bull; RAPID &bull; RobotStudio 2021</p></div>
+      <div class="card"><h4>Herramienta</h4><p>Gripper paralelo 3D &bull; Servo SG90 &bull; Arduino Uno</p></div>
+    </div>
+    <p style="margin-top:30px;font-size:14px">Duvan Pacheco &bull; Juan Mora &bull; Andres Pinilla</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px">Universidad Nacional de Colombia &bull; LabSIR</p>
+  </div>
+
+  <!-- Slide 1: Linea -->
+  <div class="slide" data-slide="1">
+    <h2>Ubicacion en la Linea de Produccion</h2>
+    <div style="display:flex;align-items:center;gap:24px;margin:30px 0">
+      <div class="card"><h4>Etapa 3</h4><p>Soldadura<br/>Motoman MH6</p></div>
+      <span style="font-size:32px;color:var(--accent)">&rarr;</span>
+      <div class="card" style="border-color:var(--accent);box-shadow:0 0 30px var(--accent)20"><h4>Etapa 4</h4><p>Embalaje y Envio<br/><strong>IRB 140 Abel</strong></p></div>
+      <span style="font-size:32px;color:var(--accent)">&rarr;</span>
+      <div class="card"><h4>Producto Final</h4><p>2 PCBs empacadas<br/>por ciclo</p></div>
+    </div>
+    <p>La Etapa 4 cierra la linea. Recibe la PCB soldada de la Etapa 3, la empaca en cajas sobre banda transportadora y evacua el lote.</p>
+  </div>
+
+  <!-- Slide 2: Componentes -->
+  <div class="slide" data-slide="2">
+    <h2>Componentes de la Estacion</h2>
+    <div class="grid3">
+      <div class="card"><h4>Robot</h4><p>ABB IRB 140 6 ejes<br/>Carga util 5 kg<br/>IRC5 + RAPID</p></div>
+      <div class="card"><h4>Gripper</h4><p>Paralelo 2 dedos<br/>Impresion 3D PLA<br/>Servo SG90</p></div>
+      <div class="card"><h4>Banda</h4><p>Transportadora<br/>Soportes para<br/>cierre de cajas</p></div>
+      <div class="card"><h4>Mesa</h4><p>2 posiciones<br/>de entrega PCB</p></div>
+      <div class="card"><h4>Control</h4><p>Arduino Uno<br/>LM2596 + PC817<br/>Modulo de reles</p></div>
+      <div class="card"><h4>PCB + Caja</h4><p>2 PCBs por ciclo<br/>Cajas individuales</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Ciclo -->
+  <div class="slide" data-slide="3">
+    <h2>Ciclo de Produccion</h2>
+    <p style="margin-bottom:20px">2 PCBs empacadas en 2 cajas por cada ciclo</p>
+    <div class="timeline" id="timeline">
+      <span class="tl-step">HOME</span><span class="tl-arr">&rarr;</span>
+      <span class="tl-step">Avance Banda</span><span class="tl-arr">&rarr;</span>
+      <span class="tl-step">Tomar PCB 1</span><span class="tl-arr">&rarr;</span>
+      <span class="tl-step">Depositar</span><span class="tl-arr">&rarr;</span>
+      <span class="tl-step">Avance Banda</span><span class="tl-arr">&rarr;</span>
+      <span class="tl-step">Tomar PCB 2</span><span class="tl-arr">&rarr;</span>
+      <span class="tl-step">Depositar</span><span class="tl-arr">&rarr;</span>
+      <span class="tl-step">Expulsion</span>
+    </div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="card"><h4>Modo Calibracion (DI_02)</h4><p>Avance 3.8s + retroceso 5s<br/>Posiciona caja en marca inicial</p></div>
+      <div class="card"><h4>Modo Produccion (DI_01)</h4><p>8 pasos automaticos<br/>T_AVANCE = 5s por caja</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Electronica -->
+  <div class="slide" data-slide="4">
+    <h2>Arquitectura Electronica</h2>
+    <p style="margin-bottom:16px">Puente entre IRC5 (24V) y SG90 (5V PWM)</p>
+    <div style="display:flex;gap:20px;width:100%;max-width:1000px">
+      <div class="card" style="flex:1"><h4>IRC5 &rarr; Arduino</h4>
+        <p style="font-family:var(--mono);font-size:12px;text-align:left">
+          DO_04 &rarr; 2.2k &rarr; PC817 #1 &rarr; D2<br/>
+          DO_06 &rarr; 2.2k &rarr; PC817 #2 &rarr; D4<br/>
+          Pull-down 10k en D2 y D4
+        </p>
+      </div>
+      <div class="card" style="flex:1"><h4>Arduino &rarr; IRC5</h4>
+        <p style="font-family:var(--mono);font-size:12px;text-align:left">
+          D5 &rarr; Rele #1 &rarr; DI_04 (gripOK)<br/>
+          D6 &rarr; Rele #2 &rarr; DI_05 (HOME)<br/>
+          D7 &rarr; Rele #3 &rarr; DI_06 (START)
+        </p>
+      </div>
+      <div class="card" style="flex:1"><h4>Potencia</h4>
+        <p style="font-family:var(--mono);font-size:12px;text-align:left">
+          LM2596: 24V &rarr; 5V<br/>
+          D9 &rarr; PWM &rarr; SG90<br/>
+          1000uF + 100nF filtro
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:12px">
+      <span class="tag tag-accent">Aislamiento galvanico PC817</span>
+      <span class="tag tag-accent">Contactos secos (reles)</span>
+      <span class="tag tag-accent">Antirrebote 30ms</span>
+    </div>
+  </div>
+
+  <!-- Slide 5: Gripper anim -->
+  <div class="slide" data-slide="5">
+    <h2>Gripper &mdash; Control y Movimiento</h2>
+    <div style="display:flex;align-items:center;gap:40px">
+      <div class="gripper" id="gripperDemo">
+        <div class="jaw l"></div>
+        <div class="pcb-piece"></div>
+        <div class="jaw r"></div>
+      </div>
+      <div>
+        <div class="grid2" style="grid-template-columns:1fr 1fr">
+          <div class="card"><h4>Abierto</h4><p class="big-num" style="font-size:36px">10&deg;</p><p>Reposo y suelta</p></div>
+          <div class="card"><h4>Cerrado</h4><p class="big-num" style="font-size:36px;color:var(--warn);-webkit-text-fill-color:var(--warn)">100&deg;</p><p>Sujecion PCB</p></div>
+        </div>
+        <p style="margin-top:12px"><span class="tag tag-ok">2&deg;/paso</span> <span class="tag tag-ok">15ms entre pasos</span> <span class="tag tag-ok">675ms cierre total</span></p>
+        <p style="margin-top:8px;font-size:13px;color:var(--text2)">Servo liberado tras 800ms en abierto para evitar calentamiento</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: RAPID -->
+  <div class="slide" data-slide="6">
+    <h2>Programacion RAPID</h2>
+    <div class="grid2">
+      <div class="card"><h4>Targets (7 posiciones)</h4>
+        <p style="font-family:var(--mono);font-size:11px;text-align:left">
+          pPCB1_Approach/Grab<br/>pPCB2_Approach/Grab<br/>
+          pCajaApproach/Place<br/>Home_ABS
+        </p>
+      </div>
+      <div class="card"><h4>Senales E/S (Board10 d652)</h4>
+        <p style="font-family:var(--mono);font-size:11px;text-align:left">
+          6 DI + 6 DO + FWD + BWD<br/>
+          DO_04: comando gripper 0/1<br/>
+          DI_04: confirmacion gripOK
+        </p>
+      </div>
+      <div class="card"><h4>Rutinas Principales</h4>
+        <p style="font-family:var(--mono);font-size:11px;text-align:left">
+          main() &bull; CicloProduccion<br/>
+          TomarPCB(n) &bull; DepositarEnCaja<br/>
+          AbrirGripper &bull; CerrarGripper<br/>
+          IrAHome &bull; VerificarParada
+        </p>
+      </div>
+      <div class="card"><h4>Parametros</h4>
+        <p style="font-family:var(--mono);font-size:11px;text-align:left">
+          T_AVANCE_CAJA = 5s<br/>T_SONDEO = 2s<br/>
+          T_RETROCESO = 5s<br/>Velocidades: v50-v300
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: HMI -->
+  <div class="slide" data-slide="7">
+    <h2>Interfaz HMI</h2>
+    <p style="margin-bottom:12px">Dashboard web estatico &bull; Web Serial API &bull; Conexion COM directa al Arduino</p>
+    <div class="grid2">
+      <div class="card"><h4>Visualizacion en Tiempo Real</h4><p>Angulo servo &bull; Estado senales &bull; Progreso del ciclo &bull; Contador PCBs &bull; Registro de eventos &bull; Gripper animado</p></div>
+      <div class="card"><h4>Control Remoto</h4><p>HOME &bull; START &bull; PING &bull; Calibracion abierto/cerrado &bull; Comandos UART 9600 baud</p></div>
+    </div>
+    <p style="margin-top:12px"><span class="tag tag-accent">HTML+CSS+JS puro</span> <span class="tag tag-accent">Sin dependencias</span> <span class="tag tag-accent">Chrome/Edge</span> <span class="tag tag-accent">Modo demo automatico</span></p>
+  </div>
+
+  <!-- Slide 8: Resultados -->
+  <div class="slide" data-slide="8">
+    <h2>Resultados y Video</h2>
+    <div class="grid2" style="margin-bottom:20px">
+      <div class="card"><h4>Simulacion</h4><p>RobotStudio 2021<br/>Controlador virtual IRC5<br/>Validacion previa de trayectorias</p></div>
+      <div class="card"><h4>Implementacion Real</h4><p>Robot IRB 140 fisico<br/>Circuito Arduino+PC817+reles<br/>Gripper 3D + SG90</p></div>
+    </div>
+    <p style="font-size:14px">
+      <a href="https://youtu.be/fSk1De6c6Eo" style="color:var(--accent);text-decoration:none;font-size:18px">
+        &#9654; Ver video: Simulacion + Implementacion Real en YouTube
+      </a>
+    </p>
+  </div>
+
+  <!-- Slide 9: Conclusiones -->
+  <div class="slide" data-slide="9">
+    <h2>Conclusiones</h2>
+    <div class="grid2" style="max-width:900px">
+      <div class="card"><h4>Integracion Exitosa</h4><p>Puente IRC5-Arduino con aislamiento galvanico PC817 y contactos secos para retroalimentacion.</p></div>
+      <div class="card"><h4>Firmware Robusto</h4><p>Arquitectura no bloqueante, antirrebote, movimiento incremental y liberacion del servo en reposo.</p></div>
+      <div class="card"><h4>HMI Funcional</h4><p>Dashboard web autocontenido con supervision en tiempo real via Web Serial API.</p></div>
+      <div class="card"><h4>Documentacion Integral</h4><p>Desde diagramas de conexionado hasta maquinas de estado del firmware y RAPID.</p></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button onclick="prev()">&larr; Anterior</button>
+  <div class="dots" id="navdots"></div>
+  <button onclick="next()">Siguiente &rarr;</button>
+</div>
+
+<script>
+let current=0;
+const total=10;
+const slides=document.querySelectorAll('.slide');
+const progress=document.getElementById('progress');
+const dotsContainer=document.getElementById('navdots');
+
+for(let i=0;i<total;i++){
+  const d=document.createElement('span');
+  if(i===0)d.className='active';
+  d.onclick=()=>goTo(i);
+  dotsContainer.appendChild(d);
+}
+
+function goTo(n){
+  slides[current].classList.remove('active');
+  document.querySelectorAll('#navdots span')[current].classList.remove('active');
+  current=((n%total)+total)%total;
+  slides[current].classList.add('active');
+  document.querySelectorAll('#navdots span')[current].classList.add('active');
+  progress.style.width=((current+1)/total*100)+'%';
+  if(current===5)startGripperAnim();
+}
+function next(){goTo(current+1)}
+function prev(){goTo(current-1)}
+
+// Gripper animation on slide 5
+function startGripperAnim(){
+  const jaws=document.querySelectorAll('#gripperDemo .jaw');
+  const pcb=document.querySelector('#gripperDemo .pcb-piece');
+  let closed=false;
+  function toggle(){
+    if(document.querySelector('.slide[data-slide="5"]')?.classList.contains('active')){
+      closed=!closed;
+      jaws.forEach(j=>j.classList.toggle('closed',closed));
+      pcb.classList.toggle('show',closed);
+    }
+  }
+  toggle();
+  setInterval(toggle,2000);
+}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')next();
+  if(e.key==='ArrowLeft')prev();
+});
+progress.style.width=(1/total*100)+'%';
+</script>
+</body>
+</html>

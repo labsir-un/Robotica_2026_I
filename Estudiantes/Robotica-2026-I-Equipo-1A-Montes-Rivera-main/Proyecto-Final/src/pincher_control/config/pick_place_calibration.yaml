@@ -1,0 +1,6 @@
+calibration:
+  offset_x_cm: 0.0
+  offset_y_cm: 0.0
+  pitch_deg: 30.0
+  z_approach_cm: 6.0
+  z_surface_cm: 1.45

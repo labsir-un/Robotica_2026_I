@@ -1,0 +1,55 @@
+flowchart TB
+    A(["Inicio"]) --> B("La salidas inician apagadas
+    DO_01 = 0
+DO_02 = 0
+DO_03 = 0")
+    B --> C["While true"]
+    C --> n1["Path_home<br>Robot en home"]
+    n1 --> n2["¿DI_01=1?"]
+    n2 -- SI --> n3["Set DO_01"]
+    n3 --> n4["Set BWD_Conveyor<br>Banda lleva el pastel a la posición de trazado"]
+    n4 --> n5["WaitTime 1s"]
+    n5 --> n6["Reset BWD_Conveyor"]
+    n6 --> n7["Path_names<br>El robot hace la rutina de escritura"]
+    n7 --> n8["Path_icon<br>El robot hace la rutina de dibujo"]
+    n8 --> n9["WaitTime 2s"]
+    n9 --> n10["Path_home<br>regresa a home"]
+    n10 --> n11@{ label: "Set BWD_Conveyor<br style=\"--tw-border-spacing-y:\">Banda lleva el pastel a la posición final" }
+    n11 --> n12["Reset DO_01"]
+    n12 --> n13["¿DI_02=1?"]
+    n2 -- NO --> n13
+    n13 -- SI --> n14["Set DO_02"]
+    n14 --> n15["Path_maintenance<br>El robot va a la posición <br>de mantenimiento"]
+    n15 --> n16["Reset DO_02"]
+    n16 --> n17["WaitUntil DI_02=0"]
+    n17 --> n18(["Path_home<br>El robot regresa a home"])
+    n18 --> n19["¿DI_03=1?"]
+    n13 -- NO --> n19
+    n19 --> n20["Set FWD_Conveyor<br>La banda lleva el pastel a<br>la posición inicial"]
+    n20 --> n21["WaitTime 1s"]
+    n21 --> n22["Reset FWD_Conveyor"]
+    n22 --> C
+    n19 -- NO --> C
+
+    C@{ shape: rounded}
+    n1@{ shape: rounded}
+    n2@{ shape: diam}
+    n3@{ shape: rounded}
+    n4@{ shape: rounded}
+    n5@{ shape: rounded}
+    n6@{ shape: rounded}
+    n7@{ shape: rounded}
+    n8@{ shape: rounded}
+    n9@{ shape: rounded}
+    n10@{ shape: rounded}
+    n11@{ shape: rounded}
+    n12@{ shape: rounded}
+    n13@{ shape: diam}
+    n14@{ shape: rounded}
+    n15@{ shape: rounded}
+    n16@{ shape: rounded}
+    n17@{ shape: rounded}
+    n19@{ shape: diam}
+    n20@{ shape: rounded}
+    n21@{ shape: rounded}
+    n22@{ shape: rounded}

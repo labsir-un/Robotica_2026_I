@@ -1,0 +1,2 @@
+/home/elreyrt/ros2_ws/turtle_sim_test/install/my_turtle_controller/lib/python3.12/site-packages/my_turtle_controller/move_turtle.py:105: SyntaxWarning: list indices must be integers or slices, not tuple; perhaps you missed a comma?
+  [0.337, 0.514, 0.0]

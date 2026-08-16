@@ -1,0 +1,56 @@
+- name: Pose1
+  positions:
+    elbow: 92.5
+    gripper: 42.5
+    shoulder: -42.5
+    waist: -90.5
+    wrist: 38.5
+- name: Pose2
+  positions:
+    elbow: 49.5
+    gripper: 42.5
+    shoulder: 33.5
+    waist: -74.5
+    wrist: 56
+- name: Pose3
+  positions:
+    elbow: -56
+    gripper: -32.5
+    shoulder: 57.5
+    waist: -123
+    wrist: 42
+- name: Pose4
+  positions:
+    elbow: -56
+    gripper: 13.5
+    shoulder: -22.5
+    waist: -28.5
+    wrist: -53.5
+- name: pose5
+  positions:
+    elbow: 47
+    gripper: 20.5
+    shoulder: -70
+    waist: -95
+    wrist: -34.5
+- name: Pose6
+  positions:
+    elbow: 49.5
+    gripper: 42.5
+    shoulder: -43.5
+    waist: -74.5
+    wrist: 56
+- name: pose7
+  positions:
+    elbow: -3
+    gripper: 42.5
+    shoulder: -21
+    waist: -37
+    wrist: 56
+- name: pose8
+  positions:
+    elbow: 42
+    gripper: 42.5
+    shoulder: -12.5
+    waist: 38.5
+    wrist: 73.5

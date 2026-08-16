@@ -1,0 +1,54 @@
+neutro:
+  waist: 0.0
+  shoulder: 0.0
+  elbow: 0.0
+  wrist: 0.0
+  gripper: 0.0
+u_izq_alta:
+  waist: 0.6
+  shoulder: 0.2
+  elbow: -0.2
+  wrist: 0.0
+  gripper: 0.0
+u_izq_baja:
+  waist: 0.6
+  shoulder: -0.4
+  elbow: 0.4
+  wrist: 0.0
+  gripper: 0.0
+u_der_baja:
+  waist: -0.6
+  shoulder: -0.4
+  elbow: 0.4
+  wrist: 0.0
+  gripper: 0.0
+u_der_alta:
+  waist: -0.6
+  shoulder: 0.2
+  elbow: -0.2
+  wrist: 0.0
+  gripper: 0.0
+alto_izq:
+  waist: 0.7
+  shoulder: 0.6
+  elbow: -0.6
+  wrist: 0.4
+  gripper: 0.5
+alto_der:
+  waist: -0.7
+  shoulder: 0.6
+  elbow: -0.6
+  wrist: 0.4
+  gripper: -0.5
+pinza_abre:
+  waist: 0.0
+  shoulder: 0.3
+  elbow: -0.3
+  wrist: 0.4
+  gripper: 0.5
+pinza_cierra:
+  waist: 0.0
+  shoulder: 0.3
+  elbow: -0.3
+  wrist: -0.4
+  gripper: -0.5

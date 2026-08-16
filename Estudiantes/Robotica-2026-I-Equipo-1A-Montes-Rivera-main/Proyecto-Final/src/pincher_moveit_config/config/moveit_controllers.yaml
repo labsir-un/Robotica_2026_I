@@ -1,0 +1,23 @@
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - arm_controller
+    - gripper_controller
+
+  arm_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - phantomx_pincher_arm_shoulder_pan_joint
+      - phantomx_pincher_arm_shoulder_lift_joint
+      - phantomx_pincher_arm_elbow_flex_joint
+      - phantomx_pincher_arm_wrist_flex_joint
+
+  gripper_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - phantomx_pincher_gripper_finger1_joint

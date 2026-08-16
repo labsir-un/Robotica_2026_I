@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<robot name="phantomx_pincher" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="use_meshes" default="true"/>
+  <xacro:include filename="$(find pincher_description)/urdf/phantomx_pincher.urdf.xacro"/>
+</robot>

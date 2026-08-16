@@ -1,0 +1,49 @@
+poses:
+- nombre: pose 8
+  waist: 0.0
+  shoulder: 0.0
+  elbow: 0.0
+  wrist: 0.0
+  gripper: 0.0
+- nombre: pose 7
+  waist: 26.0
+  shoulder: -4.7
+  elbow: 15.9
+  wrist: 31.9
+  gripper: 8.1
+- nombre: pose 6
+  waist: 26.0
+  shoulder: -13.0
+  elbow: 15.9
+  wrist: 53.7
+  gripper: 26.9
+- nombre: pose 5
+  waist: 26.0
+  shoulder: -13.0
+  elbow: 15.9
+  wrist: 53.7
+  gripper: 0.0
+- nombre: pose 4
+  waist: 26.0
+  shoulder: -13.0
+  elbow: 15.9
+  wrist: 40.2
+  gripper: 0.0
+- nombre: pose 3
+  waist: 26.0
+  shoulder: -13.0
+  elbow: 15.9
+  wrist: 0.0
+  gripper: 0.0
+- nombre: pose 2
+  waist: 26.0
+  shoulder: -13.0
+  elbow: 0.0
+  wrist: 0.0
+  gripper: 0.0
+- nombre: pose1
+  waist: 26.0
+  shoulder: 0.0
+  elbow: 0.0
+  wrist: 0.0
+  gripper: 0.0

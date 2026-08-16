@@ -1,0 +1,15 @@
+pincher_controller:
+  ros__parameters:
+    motor_model: ax12a
+    use_hardware: false
+    port: /dev/ttyUSB0
+    baudrate: 1000000
+    dxl_ids: [1, 2, 3, 4, 5]
+    joint_names: [waist, shoulder, elbow, wrist, gripper]
+    joint_signs: [1.0, -1.0, -1.0, -1.0, 1.0]
+    home_positions: [512, 512, 512, 512, 512]
+    moving_speed: 100
+    torque_limit: 800
+    read_rate_hz: 20.0
+    home_on_startup: false
+    disable_torque_on_shutdown: true

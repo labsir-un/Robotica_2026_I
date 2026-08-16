@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>pincher_sorting</name>
+  <version>0.1.0</version>
+  <description>Máquina de estados de clasificación automatizada (Pick and Place) para el robot PhantomX Pincher X100.</description>
+  <maintainer email="jriveramo@unal.edu.co">Jesús Rivera</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+  <exec_depend>pincher_control</exec_depend>
+  <exec_depend>pincher_description</exec_depend>
+  <exec_depend>pincher_moveit_config</exec_depend>
+  <exec_depend>pincher_vision</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

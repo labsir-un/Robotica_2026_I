@@ -1,0 +1,122 @@
+' Declaración de los arreglos globales
+' Un tamaño de 30 en SPEL+ reserva memoria para los índices del 0 al 30.
+Global Integer ruta_huevo1(30)
+Global Integer ruta_huevo2(30)
+Global Integer i
+
+Function main
+    ' 1. Inicialización y parámetros de seguridad
+    Motor On
+    Power High
+    Speed 100   ' Velocidad para manipular los huevos con cuidado
+    Accel 100, 100
+    LimZ 0      ' Ajusta a tu límite Z superior seguro
+    
+    Home
+    ' 2. Definición de la cubeta (6 columnas x 5 filas)
+    ' Asegúrate de que Origen, PointX y PointY estén guardados en tu tabla de puntos
+    Pallet 1, Origin, PointX, PointY, 6, 5
+    
+    ' 3. Cargar las nuevas rutas en la memoria
+    Call CargarRutas
+    
+    Print "Iniciando secuencia con las nuevas rutas de 30 posiciones..."
+    
+    ' 4. Bucle principal para mover los huevos alternadamente
+    ' Va de 0 a 28 para que el último movimiento vaya del índice 28 al 29.
+    For i = 0 To 28
+        Print "Moviendo Huevo 1: paso ", i + 1
+        Call MoverHuevo(ruta_huevo1(i), ruta_huevo1(i + 1))
+        
+        Print "Moviendo Huevo 2: paso ", i + 1
+        Call MoverHuevo(ruta_huevo2(i), ruta_huevo2(i + 1))
+    Next
+    
+    Print "Secuencia completada con éxito."
+    Home
+Fend
+
+Function CargarRutas
+    ' --- Ruta del Huevo 1 ---
+    ruta_huevo1(0) = 1
+    ruta_huevo1(1) = 9
+    ruta_huevo1(2) = 5
+    ruta_huevo1(3) = 18
+    ruta_huevo1(4) = 29
+    ruta_huevo1(5) = 21
+    ruta_huevo1(6) = 25
+    ruta_huevo1(7) = 14
+    ruta_huevo1(8) = 3
+    ruta_huevo1(9) = 7
+    ruta_huevo1(10) = 20
+    ruta_huevo1(11) = 28
+    ruta_huevo1(12) = 24
+    ruta_huevo1(13) = 11
+    ruta_huevo1(14) = 22
+    ruta_huevo1(15) = 26
+    ruta_huevo1(16) = 13
+    ruta_huevo1(17) = 2
+    ruta_huevo1(18) = 15
+    ruta_huevo1(19) = 19
+    ruta_huevo1(20) = 8
+    ruta_huevo1(21) = 4
+    ruta_huevo1(22) = 12
+    ruta_huevo1(23) = 16
+    ruta_huevo1(24) = 27
+    ruta_huevo1(25) = 23
+    ruta_huevo1(26) = 10
+    ruta_huevo1(27) = 6
+    ruta_huevo1(28) = 17
+    ruta_huevo1(29) = 30  ' Posición final (Inició en 1)
+
+    ' --- Ruta del Huevo 2 ---
+    ruta_huevo2(0) = 30
+    ruta_huevo2(1) = 17
+    ruta_huevo2(2) = 6
+    ruta_huevo2(3) = 10
+    ruta_huevo2(4) = 2
+    ruta_huevo2(5) = 13
+    ruta_huevo2(6) = 26
+    ruta_huevo2(7) = 22
+    ruta_huevo2(8) = 18
+    ruta_huevo2(9) = 5
+    ruta_huevo2(10) = 16
+    ruta_huevo2(11) = 29
+    ruta_huevo2(12) = 21
+    ruta_huevo2(13) = 25
+    ruta_huevo2(14) = 14
+    ruta_huevo2(15) = 27
+    ruta_huevo2(16) = 19
+    ruta_huevo2(17) = 8
+    ruta_huevo2(18) = 4
+    ruta_huevo2(19) = 12
+    ruta_huevo2(20) = 23
+    ruta_huevo2(21) = 15
+    ruta_huevo2(22) = 7
+    ruta_huevo2(23) = 3
+    ruta_huevo2(24) = 11
+    ruta_huevo2(25) = 24
+    ruta_huevo2(26) = 28
+    ruta_huevo2(27) = 20
+    ruta_huevo2(28) = 9
+    ruta_huevo2(29) = 1   ' Posición final (Inició en 30)
+Fend
+
+Function MoverHuevo(pos_origen As Integer, pos_destino As Integer)
+    ' 1. Ir a la casilla donde está el huevo actualmente
+    Jump Pallet(1, pos_origen)
+    
+    ' 2. Activar la herramienta (ventosa o gripper)
+    ' Asegúrate de que "Succ" sea el nombre correcto de tu salida I/O
+    Off 9
+    
+    Wait 1 ' Tiempo de espera para asegurar el agarre
+    
+    ' 3. Saltar a la nueva casilla (destino)
+    Jump Pallet(1, pos_destino)
+    
+    ' 4. Soltar el huevo
+    On 9
+    
+    Wait 1 ' Tiempo de espera para que libere completamente
+Fend

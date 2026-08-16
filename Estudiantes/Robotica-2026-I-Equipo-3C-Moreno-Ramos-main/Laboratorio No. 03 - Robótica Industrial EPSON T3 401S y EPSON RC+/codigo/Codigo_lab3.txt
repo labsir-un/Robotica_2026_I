@@ -1,0 +1,542 @@
+Global Integer i
+
+Function main
+    Motor On
+    Power Low
+    Accel 100, 100 '%
+    Speed 100 '%
+    Home
+    
+    Call Paletizado_01
+    
+    ' Al terminar toda la secuencia, el robot regresa a su posición segura
+    Home
+Fend
+
+Function Paletizado_01
+    ' Usamos UN SOLO paletizado para garantizar la máxima precisión en ambos huevos
+    Pallet 1, Origen, PuntoX, PuntoY, 6, 5
+
+    ' --- Rutina 1: Posición H1(1 a 9) / H2(30 a 22) ---
+    Jump Pallet(1, 1)
+    Wait 2
+    Off DO_09 ' Agarrar huevo 1
+    Wait 1
+    Jump Pallet(1, 9)
+    Wait 1
+    On DO_09 ' Soltar huevo 1
+    Wait 1
+    Jump Pallet(1, 30)
+    Wait 1
+    Off DO_09 ' Agarrar huevo 2
+    Wait 2
+    Jump Pallet(1, 22)
+    Wait 1
+    On DO_09 ' Soltar huevo 2
+    Wait 1
+
+    ' --- Rutina 2: Posición H1(9 a 5) / H2(22 a 26) ---
+    Jump Pallet(1, 9)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 5)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 22)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 26)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 3: Posición H1(5 a 18) / H2(26 a 13) ---
+    Jump Pallet(1, 5)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 18)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 26)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 13)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 4: Posición H1(18 a 29) / H2(13 a 2) ---
+    Jump Pallet(1, 18)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 29)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 13)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 2)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 5: Posición H1(29 a 21) / H2(2 a 10) ---
+    Jump Pallet(1, 29)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 21)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 2)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 10)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 6: Posición H1(21 a 25) / H2(10 a 6) ---
+    Jump Pallet(1, 21)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 25)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 10)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 6)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 7: Posición H1(25 a 14) / H2(6 a 17) ---
+    Jump Pallet(1, 25)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 14)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 6)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 17)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 8: Posición H1(14 a 22) / H2(17 a 9) ---
+    Jump Pallet(1, 14)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 22)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 17)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 9)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 9: Posición H1(22 a 30) / H2(9 a 1) ---
+    Jump Pallet(1, 22)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 30)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 9)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 1)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 10: Posición H1(30 a 17) / H2(1 a 14) ---
+    Jump Pallet(1, 30)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 17)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 1)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 14)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 11: Posición H1(17 a 6) / H2(14 a 25) ---
+    Jump Pallet(1, 17)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 6)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 14)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 25)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 12: Posición H1(6 a 10) / H2(25 a 21) ---
+    Jump Pallet(1, 6)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 10)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 25)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 21)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 13: Posición H1(10 a 2) / H2(21 a 29) ---
+    Jump Pallet(1, 10)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 2)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 21)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 29)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 14: Posición H1(2 a 13) / H2(29 a 18) ---
+    Jump Pallet(1, 2)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 13)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 29)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 18)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 15: Posición H1(13 a 26) / H2(18 a 5) ---
+    Jump Pallet(1, 13)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 26)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 18)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 5)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 16: Posición H1(26 a 15) / H2(5 a 16) ---
+    Jump Pallet(1, 26)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 15)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 5)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 16)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 17: Posición H1(15 a 23) / H2(16 a 8) ---
+    Jump Pallet(1, 15)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 23)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 16)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 8)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 18: Posición H1(23 a 27) / H2(8 a 4) ---
+    Jump Pallet(1, 23)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 27)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 8)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 4)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 19: Posición H1(27 a 19) / H2(4 a 12) ---
+    Jump Pallet(1, 27)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 19)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 4)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 12)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 20: Posición H1(19 a 8) / H2(12 a 23) ---
+    Jump Pallet(1, 19)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 8)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 12)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 23)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 21: Posición H1(8 a 4) / H2(23 a 27) ---
+    Jump Pallet(1, 8)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 4)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 23)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 27)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 22: Posición H1(4 a 12) / H2(27 a 19) ---
+    Jump Pallet(1, 4)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 12)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 27)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 19)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 23: Posición H1(12 a 16) / H2(19 a 15) ---
+    Jump Pallet(1, 12)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 16)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 19)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 15)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 24: Posición H1(16 a 24) / H2(15 a 7) ---
+    Jump Pallet(1, 16)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 24)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 15)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 7)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 25: Posición H1(24 a 28) / H2(7 a 3) ---
+    Jump Pallet(1, 24)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 28)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 7)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 3)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 26: Posición H1(28 a 20) / H2(3 a 11) ---
+    Jump Pallet(1, 28)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 20)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 3)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 11)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 27: Posición H1(20 a 7) / H2(11 a 24) ---
+    Jump Pallet(1, 20)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 7)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 11)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 24)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 28: Posición H1(7 a 3) / H2(24 a 28) ---
+    Jump Pallet(1, 7)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 3)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 24)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 28)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+    ' --- Rutina 29: Posición H1(3 a 11) / H2(28 a 20) ---
+    Jump Pallet(1, 3)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 11)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+    Jump Pallet(1, 28)
+    Wait 1
+    Off DO_09 ' Agarrar
+    Wait 2
+    Jump Pallet(1, 20)
+    Wait 1
+    On DO_09 ' Soltar
+    Wait 1
+
+Fend

@@ -1,0 +1,6 @@
+articulacion,extremo_inferior_deg,extremo_superior_deg,limite_inferior_deg,limite_superior_deg,margen_seguridad_deg
+base,-150.0,150.0,-145.0,145.0,5.0
+hombro,-100.0,100.0,-96.0,96.0,4.0
+codo,-144.0,150.0,-138.0,144.0,6.0
+muneca,-110.0,124.0,-106.0,120.0,4.0
+pinza,-40.0,40.0,-35.0,35.0,5.0

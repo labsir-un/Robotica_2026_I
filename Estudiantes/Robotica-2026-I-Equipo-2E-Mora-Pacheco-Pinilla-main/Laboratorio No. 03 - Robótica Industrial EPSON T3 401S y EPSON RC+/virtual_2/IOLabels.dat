@@ -1,0 +1,39 @@
+ENVT0100,LM:2026/05/06 19:28:11:536,DS:0000000621,CS:26638,MA:*                ,EI:           
+sRCVersion="7.5.2"
+InputBitLabels {
+	nNumberOfLabels=1
+	Label1 {
+		nBit=9
+		sLabel="DI_09"
+		sDescription=""
+	}
+}
+InputByteLabels {
+	nNumberOfLabels=0
+}
+InputWordLabels {
+	nNumberOfLabels=0
+}
+OutputBitLabels {
+	nNumberOfLabels=1
+	Label1 {
+		nBit=9
+		sLabel="DO_09"
+		sDescription=""
+	}
+}
+OutputByteLabels {
+	nNumberOfLabels=0
+}
+OutputWordLabels {
+	nNumberOfLabels=0
+}
+MemoryBitLabels {
+	nNumberOfLabels=0
+}
+MemoryByteLabels {
+	nNumberOfLabels=0
+}
+MemoryWordLabels {
+	nNumberOfLabels=0
+}

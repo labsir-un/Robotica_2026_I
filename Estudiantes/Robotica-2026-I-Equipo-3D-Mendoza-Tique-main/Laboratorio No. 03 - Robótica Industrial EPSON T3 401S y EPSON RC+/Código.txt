@@ -1,0 +1,165 @@
+Global Integer i
+Global Integer sIndex
+Global Integer tour(31)
+Global Integer occ(31)
+Global Integer eggApos
+Global Integer eggBpos
+Global Integer boardCols
+Global Integer boardRows
+
+Function InitTour
+    tour(1) = 1
+    tour(2) = 30
+    tour(3) = 9
+    tour(4) = 17
+    tour(5) = 5
+    tour(6) = 6
+    tour(7) = 18
+    tour(8) = 10
+    tour(9) = 29
+    tour(10) = 2
+    tour(11) = 21
+    tour(12) = 13
+    tour(13) = 25
+    tour(14) = 26
+    tour(15) = 14
+    tour(16) = 15
+    tour(17) = 3
+    tour(18) = 19
+    tour(19) = 7
+    tour(20) = 27
+    tour(21) = 20
+    tour(22) = 23
+    tour(23) = 28
+    tour(24) = 12
+    tour(25) = 24
+    tour(26) = 4
+    tour(27) = 11
+    tour(28) = 8
+    tour(29) = 22
+    tour(30) = 16
+Fend
+Function RowFromIndex(idx As Integer) As Integer
+   RowFromIndex = ((idx - 1) / boardCols)
+Fend
+
+Function ColFromIndex(idx As Integer) As Integer
+    ColFromIndex = ((idx - 1) Mod boardCols) + 1
+Fend
+
+Function InBounds(r As Integer, c As Integer) As Boolean
+    If r < 1 Then
+    InBounds = 0
+    EndIf
+    If r > boardRows Then
+    InBounds = 0
+    EndIf
+    If c < 1 Then
+    InBounds = 0
+    EndIf
+    If c > boardCols Then
+    InBounds = 0
+    EndIf
+    InBounds = 1
+Fend
+
+Function IsReachable(name$ As String, idx As Integer) As Integer
+    Integer r1, c1, r2, c2, dr, dc
+    If name$ = "A" Then
+        r1 = RowFromIndex(eggApos)
+        C1 = ColFromIndex(eggApos)
+    Else
+        r1 = RowFromIndex(eggBpos)
+        C1 = ColFromIndex(eggBpos)
+    EndIf
+    r2 = RowFromIndex(idx)
+    C2 = ColFromIndex(idx)
+    dr = Abs(r1 - r2)
+    dc = Abs(c1 - c2)
+    If (dr = 1 And dc = 2) Or (dr = 2 And dc = 1) Then
+        IsReachable = 1
+    EndIf
+    IsReachable = 0
+Fend
+
+Function UpdateOcc(huevo$ As String, newIdx As Integer)
+    If huevo$ = "A" Then
+        occ(eggApos) = 0
+        eggApos = newIdx
+        occ(eggApos) = 1
+    Else
+        occ(eggBpos) = 0
+        eggBpos = newIdx
+        occ(eggBpos) = 1
+    EndIf
+Fend
+
+Function HandleError
+    Motor Off
+    Home
+Fend
+
+Function PickAndPlace(gripper$ As String, destIdx As Integer)
+    Off D0_09
+    Wait 0.2
+    Jump Pallet(1, destIdx)
+    Wait 0.2
+    On D0_09
+    Wait 0.2
+Fend
+
+Function MoveEgg(name$ As String, targetIdx As Short)
+
+    If name$ = "A" Then
+        Jump Pallet(1, eggApos)
+        Wait 0.2
+        PickAndPlace("A", targetIdx)
+        UpdateOcc("A", targetIdx)
+    Else
+        Jump Pallet(1, eggBpos)
+        Wait 0.2
+        PickAndPlace("B", targetIdx)
+        UpdateOcc("B", targetIdx)
+    EndIf
+Fend
+
+Function InitOcc
+    eggApos = 1
+    eggBpos = 30
+    For i = 1 To 30
+        occ(i) = 0
+    Next
+    occ(eggApos) = 1
+    occ(eggBpos) = 1
+Fend
+
+Function main
+    boardCols = 6
+    boardRows = 5
+
+    Motor On
+    Power High
+    Accel 50, 50
+    Speed 30
+    Home
+
+    Pallet 1, Origin, PuntoX, PuntoY, 6, 5
+
+    Call InitTour
+    Call InitOcc
+
+    For sIndex = 1 To 30
+        If (sIndex Mod 2) = 1 Then
+            If eggApos <> tour(sIndex) Then
+                Call MoveEgg("A", tour(sIndex))
+            EndIf
+        Else
+            If eggBpos <> tour(sIndex) Then
+                Call MoveEgg("B", tour(sIndex))
+            EndIf
+        EndIf
+    Next
+
+    Home
+    Motor Off
+Fend

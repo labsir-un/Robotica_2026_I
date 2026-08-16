@@ -1,0 +1,32 @@
+Visualization Manager:
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Grid
+      Plane Cell Count: 20
+      Reference Frame: phantomx_pincher_base_link
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Figura
+      Topic:
+        Value: /pincher/figure
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Description Source: Topic
+      Description Topic:
+        Value: /robot_description
+      Enabled: true
+      Name: RobotModel
+      Visual Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: phantomx_pincher_base_link
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 0.62
+      Focal Point: {X: 0.02, Y: 0, Z: 0.18}
+      Pitch: 0.28
+      Yaw: 0.75
+      Name: Current View

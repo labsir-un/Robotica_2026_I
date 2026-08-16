@@ -1,0 +1,56 @@
+- nombre: Pose 1
+  q:
+    base: 0.0
+    hombro: 0.0
+    codo: -3.083834903676168e-05
+    muneca: 0.0
+    pinza: 0.0
+- nombre: Pose 2
+  q:
+    base: -58.00000000000001
+    hombro: 36.5
+    codo: -3.083834903676168e-05
+    muneca: -38.5
+    pinza: 0.0
+- nombre: Pose 3
+  q:
+    base: 64.5
+    hombro: 21.0
+    codo: -50.5
+    muneca: 69.0
+    pinza: 20.0
+- nombre: Pose 4
+  q:
+    base: 8.47295297243396e-06
+    hombro: -33.0
+    codo: 45.0
+    muneca: 67.5
+    pinza: 0.0
+- nombre: Pose 5
+  q:
+    base: 0.0
+    hombro: -0.0010410286025594698
+    codo: 37.5
+    muneca: 0.0
+    pinza: 0.0
+- nombre: Pose 6
+  q:
+    base: 0.0
+    hombro: -47.0
+    codo: 37.5
+    muneca: 0.0
+    pinza: 0.0
+- nombre: Pose 7
+  q:
+    base: 48.5
+    hombro: -47.0
+    codo: 37.5
+    muneca: 0.0
+    pinza: 0.0
+- nombre: Pose 8
+  q:
+    base: 48.5
+    hombro: -47.0
+    codo: 37.5
+    muneca: 44.5
+    pinza: 19.5

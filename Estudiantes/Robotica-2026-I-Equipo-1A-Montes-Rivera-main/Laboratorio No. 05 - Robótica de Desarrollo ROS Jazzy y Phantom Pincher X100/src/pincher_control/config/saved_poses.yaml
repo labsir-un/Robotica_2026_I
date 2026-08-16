@@ -1,0 +1,71 @@
+poses:
+- joints:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  name: home_vertical
+- joints:
+  - 0.0
+  - 30.0
+  - -30.0
+  - 20.0
+  - 0.0
+  name: lookup
+- joints:
+  - -45.0
+  - 20.0
+  - -20.0
+  - 10.0
+  - 0.0
+  name: side_left
+- joints:
+  - 45.0
+  - 20.0
+  - -20.0
+  - 10.0
+  - 0.0
+  name: side_right
+- joints:
+  - 0.0
+  - -20.0
+  - 45.0
+  - 45.0
+  - 0.0
+  name: salute
+- joints:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 60.0
+  name: open_gripper
+- joints:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - -60.0
+  name: close_gripper
+- joints:
+  - 0.0
+  - -45.0
+  - 90.0
+  - 0.0
+  - 0.0
+  name: rest
+- joints:
+  - 57.58
+  - -95.82
+  - 52.48
+  - -30.24
+  - 31.56
+  name: Pose_1
+- joints:
+  - -63.12
+  - -71.21
+  - 23.56
+  - 41.67
+  - -31.91
+  name: Pose_3

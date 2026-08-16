@@ -1,0 +1,95 @@
+import random
+
+# Dimensiones de la cuadrícula
+COLS = 6
+ROWS = 5
+TOTAL_POS = COLS * ROWS
+
+def get_knight_moves(x, y):
+    """Retorna los movimientos válidos del caballo desde (x,y)."""
+    moves = []
+    deltas = [(1, 2), (2, 1), (-1, 2), (-2, 1), (1, -2), (2, -1), (-1, -2), (-2, -1)]
+    for dx, dy in deltas:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < COLS and 0 <= ny < ROWS:
+            moves.append((nx, ny))
+    return moves
+
+def find_tours(start, end, max_tours=50):
+    """Encuentra múltiples rutas completas desde 'start' hasta 'end'."""
+    tours = []
+    
+    def dfs(curr, path):
+        if len(tours) >= max_tours: return
+        if len(path) == TOTAL_POS:
+            if path[-1] == end:
+                tours.append(list(path))
+            return
+            
+        moves = get_knight_moves(*curr)
+        valid_moves = [m for m in moves if m not in path]
+        
+        # Heurística de Warnsdorff con aleatoriedad para generar rutas distintas
+        valid_moves.sort(key=lambda m: (len([nm for nm in get_knight_moves(*m) if nm not in path]), random.random()))
+        
+        for m in valid_moves:
+            path.append(m)
+            dfs(m, path)
+            path.pop()
+
+    dfs(start, [start])
+    return tours
+
+def check_collision(pathA, pathB):
+    """
+    Verifica si hay colisión.
+    Asume que el Huevo A se mueve primero y luego el Huevo B en cada turno.
+    """
+    for i in range(TOTAL_POS - 1):
+        # El huevo A se mueve, el huevo B sigue en su posición actual
+        if pathA[i+1] == pathB[i]:
+            return True
+        # El huevo B se mueve a su nueva posición
+        if pathA[i+1] == pathB[i+1]:
+            return True
+    return False
+
+def main():
+    # Posiciones iniciales (esquinas opuestas)
+    start_A = (0, 0)
+    start_B = (5, 4)
+    
+    print("Calculando trayectorias...")
+    
+    # Generar un conjunto de rutas posibles para cada huevo
+    tours_A = find_tours(start_A, start_B, max_tours=50)
+    tours_B = find_tours(start_B, start_A, max_tours=50)
+    
+    if not tours_A or not tours_B:
+        print("No se encontraron rutas. Intenta ejecutar el script nuevamente.")
+        return
+
+    # Buscar un par de rutas que no colisionen
+    valid_path_A = None
+    valid_path_B = None
+    
+    for pA in tours_A:
+        for pB in tours_B:
+            if not check_collision(pA, pB):
+                valid_path_A = pA
+                valid_path_B = pB
+                break
+        if valid_path_A:
+            break
+            
+    if valid_path_A and valid_path_B:
+        print("\n¡Trayectorias encontradas sin colisiones!\n")
+        print("Paso | Posición Huevo A (x,y) | Posición Huevo B (x,y)")
+        print("-" * 55)
+        for i in range(TOTAL_POS):
+            print(f"{i:4d} | {str(valid_path_A[i]):>20} | {str(valid_path_B[i]):>20}")
+    else:
+        print("Se encontraron rutas, pero todas presentan colisiones. Ejecuta nuevamente.")
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,196 @@
+<?xml version="1.0"?>
+<robot name="filoberta" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="use_meshes" default="true"/>
+
+  <xacro:property name="L1" value="0.0445"/>
+  <xacro:property name="L2" value="0.1010"/>
+  <xacro:property name="L3" value="0.1010"/>
+  <xacro:property name="L4" value="0.1190"/>
+  <xacro:property name="Lm" value="0.0315"/>
+
+  <material name="pincher_black">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+
+  <xacro:macro name="visual_mesh_or_box" params="mesh mesh_xyz mesh_rpy box_size box_xyz box_rpy">
+    <xacro:if value="$(arg use_meshes)">
+      <visual>
+        <origin xyz="${mesh_xyz}" rpy="${mesh_rpy}"/>
+        <geometry>
+          <mesh filename="package://pincher_description/meshes/${mesh}" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="pincher_black"/>
+      </visual>
+    </xacro:if>
+    <xacro:unless value="$(arg use_meshes)">
+      <visual>
+        <origin xyz="${box_xyz}" rpy="${box_rpy}"/>
+        <geometry>
+          <box size="${box_size}"/>
+        </geometry>
+        <material name="pincher_black"/>
+      </visual>
+    </xacro:unless>
+  </xacro:macro>
+
+  <link name="world"/>
+
+  <joint name="joint_world" type="fixed">
+    <parent link="world"/>
+    <child link="link0"/>
+  </joint>
+
+  <link name="link0">
+    <xacro:visual_mesh_or_box
+      mesh="px100_1_base.stl"
+      mesh_xyz="0.0 0.0 0.0"
+      mesh_rpy="0.0 0.0 ${pi/2}"
+      box_size="0.10 0.10 0.045"
+      box_xyz="0.0 0.0 0.0225"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+
+  <joint name="waist" type="revolute">
+    <origin xyz="0.0 0.0 ${0.08945-L1}" rpy="0.0 0.0 0.0"/>
+    <parent link="link0"/>
+    <child link="link1"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit lower="${-150*pi/180}" upper="${150*pi/180}" effort="4.0" velocity="2.0"/>
+  </joint>
+
+  <link name="link1">
+    <xacro:visual_mesh_or_box
+      mesh="px100_2_shoulder.stl"
+      mesh_xyz="0.0 0.0 0.0"
+      mesh_rpy="0.0 0.0 ${pi/2}"
+      box_size="0.065 0.065 0.070"
+      box_xyz="0.0 0.0 0.015"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+
+  <joint name="shoulder" type="revolute">
+    <origin xyz="0.0 0.0 ${L1}" rpy="${-pi/2} 0.0 0.0"/>
+    <parent link="link1"/>
+    <child link="link2"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit lower="${-150*pi/180}" upper="${150*pi/180}" effort="4.0" velocity="2.0"/>
+  </joint>
+
+  <link name="link2">
+    <xacro:visual_mesh_or_box
+      mesh="px100_3_upper_arm.stl"
+      mesh_xyz="0.0 0.0 0.0"
+      mesh_rpy="${pi/2} ${-pi/2} 0.0"
+      box_size="0.045 ${L2} 0.045"
+      box_xyz="${Lm/2} ${-L2/2} 0.0"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+
+  <joint name="elbow" type="revolute">
+    <origin xyz="${Lm} ${-L2} 0.0" rpy="0.0 0.0 ${-atan2(L2,Lm)}"/>
+    <parent link="link2"/>
+    <child link="link3"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit lower="${-150*pi/180}" upper="${150*pi/180}" effort="4.0" velocity="2.0"/>
+  </joint>
+
+  <link name="link3">
+    <xacro:visual_mesh_or_box
+      mesh="px100_4_forearm.stl"
+      mesh_xyz="0.0 0.0 0.0"
+      mesh_rpy="0.0 ${pi/2} ${pi/2+atan2(L2,Lm)}"
+      box_size="${L3} 0.040 0.040"
+      box_xyz="${L3/2} 0.0 0.0"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+
+  <joint name="wrist" type="revolute">
+    <origin xyz="${L3*cos(atan2(L2,Lm))} ${L3*sin(atan2(L2,Lm))} 0.0" rpy="0.0 0.0 ${atan2(L2,Lm)}"/>
+    <parent link="link3"/>
+    <child link="link4"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit lower="${-150*pi/180}" upper="${150*pi/180}" effort="4.0" velocity="2.0"/>
+  </joint>
+
+  <link name="link4">
+    <xacro:visual_mesh_or_box
+      mesh="px100_5_gripper.stl"
+      mesh_xyz="0.0 0.0 0.0"
+      mesh_rpy="0.0 ${-pi/2} ${pi/2}"
+      box_size="${L4} 0.055 0.050"
+      box_xyz="${L4/2} 0.0 0.0"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+
+  <joint name="joint4" type="fixed">
+    <origin xyz="${L4} 0.0 0.0" rpy="${-pi/2} 0.0 ${-pi/2}"/>
+    <parent link="link4"/>
+    <child link="gripper_bar"/>
+  </joint>
+
+  <link name="gripper_bar">
+    <xacro:visual_mesh_or_box
+      mesh="px100_7_gripper_bar.stl"
+      mesh_xyz="0.0 0.0 ${-L4}"
+      mesh_rpy="${-pi/2} 0.0 ${-pi/2}"
+      box_size="0.075 0.020 0.018"
+      box_xyz="0.035 0.0 0.0"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+
+  <joint name="gripper" type="revolute">
+    <origin xyz="0.066 0.0 0.0" rpy="0.0 ${pi/2} 0.0"/>
+    <parent link="link4"/>
+    <child link="prop"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <limit lower="${-pi/2}" upper="${pi/2}" effort="2.0" velocity="1.0"/>
+  </joint>
+
+  <link name="prop">
+    <xacro:visual_mesh_or_box
+      mesh="px100_6_gripper_prop.stl"
+      mesh_xyz="0.0 0.0 -0.066"
+      mesh_rpy="${-pi/2} 0.0 0.0"
+      box_size="0.025 0.025 0.050"
+      box_xyz="0.0 0.0 -0.025"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+
+  <joint name="joint6" type="prismatic">
+    <origin xyz="0.0 0.0 ${0.08605-L4}" rpy="0.0 ${pi/2} 0.0"/>
+    <parent link="gripper_bar"/>
+    <child link="finger_1"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="-0.04" upper="-0.015" effort="2.0" velocity="0.05"/>
+    <mimic joint="gripper" multiplier="-0.008" offset="-0.0265"/>
+  </joint>
+
+  <link name="finger_1">
+    <xacro:visual_mesh_or_box
+      mesh="px100_8_gripper_finger.stl"
+      mesh_xyz="0.0 0.0 0.0"
+      mesh_rpy="0.0 0.0 0.0"
+      box_size="0.070 0.012 0.015"
+      box_xyz="0.035 0.0 0.0"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+
+  <joint name="joint7" type="prismatic">
+    <origin xyz="0.0 0.0 ${0.08605-L4}" rpy="0.0 ${pi/2} ${pi}"/>
+    <parent link="gripper_bar"/>
+    <child link="finger_2"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <limit lower="-0.04" upper="-0.015" effort="2.0" velocity="0.05"/>
+    <mimic joint="joint6" multiplier="1.0" offset="0.0"/>
+  </joint>
+
+  <link name="finger_2">
+    <xacro:visual_mesh_or_box
+      mesh="px100_8_gripper_finger.stl"
+      mesh_xyz="0.0 0.0 0.0"
+      mesh_rpy="0.0 0.0 0.0"
+      box_size="0.070 0.012 0.015"
+      box_xyz="0.035 0.0 0.0"
+      box_rpy="0.0 0.0 0.0"/>
+  </link>
+</robot>

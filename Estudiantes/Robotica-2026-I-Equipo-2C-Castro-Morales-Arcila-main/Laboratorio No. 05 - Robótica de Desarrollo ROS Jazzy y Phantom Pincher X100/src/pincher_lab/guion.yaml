@@ -1,0 +1,72 @@
+- {t: 0.0, pose: u_izq_alta, dur: 1.0}
+- {t: 1.5, pose: u_izq_baja, dur: 0.5}
+- {t: 2.5, pose: u_der_baja, dur: 0.8}
+- {t: 3.5, pose: u_der_alta, dur: 0.5}
+- {t: 4.5, pose: u_izq_alta, dur: 0.8}
+- {t: 5.5, pose: u_izq_baja, dur: 0.5}
+- {t: 6.5, pose: u_der_baja, dur: 0.8}
+- {t: 7.5, pose: u_der_alta, dur: 0.5}
+- {t: 8.5, pose: u_izq_alta, dur: 0.8}
+- {t: 9.5, pose: u_izq_baja, dur: 0.5}
+- {t: 10.5, pose: u_der_baja, dur: 0.8}
+- {t: 11.5, pose: u_der_alta, dur: 0.5}
+
+- {t: 13.0, pose: alto_izq, dur: 1.0}
+- {t: 14.5, pose: alto_der, dur: 1.0}
+- {t: 16.0, pose: alto_izq, dur: 1.0}
+- {t: 17.5, pose: alto_der, dur: 1.0}
+- {t: 19.0, pose: alto_izq, dur: 1.0}
+- {t: 20.5, pose: alto_der, dur: 1.0}
+- {t: 22.0, pose: alto_izq, dur: 1.0}
+- {t: 23.5, pose: alto_der, dur: 1.0}
+
+- {t: 25.0, pose: u_izq_alta, dur: 1.0}
+- {t: 26.5, pose: u_izq_baja, dur: 0.5}
+- {t: 27.5, pose: u_der_baja, dur: 0.8}
+- {t: 28.5, pose: u_der_alta, dur: 0.5}
+- {t: 29.5, pose: u_izq_alta, dur: 0.8}
+- {t: 30.5, pose: u_izq_baja, dur: 0.5}
+- {t: 31.5, pose: u_der_baja, dur: 0.8}
+- {t: 32.5, pose: u_der_alta, dur: 0.5}
+- {t: 33.5, pose: u_izq_alta, dur: 0.8}
+- {t: 34.5, pose: u_izq_baja, dur: 0.5}
+- {t: 35.5, pose: u_der_baja, dur: 0.8}
+- {t: 36.5, pose: u_der_alta, dur: 0.5}
+
+- {t: 38.0, pose: alto_izq, dur: 1.0}
+- {t: 39.5, pose: alto_der, dur: 1.0}
+- {t: 41.0, pose: alto_izq, dur: 1.0}
+- {t: 42.5, pose: alto_der, dur: 1.0}
+- {t: 44.0, pose: alto_izq, dur: 1.0}
+- {t: 45.5, pose: alto_der, dur: 1.0}
+- {t: 47.0, pose: alto_izq, dur: 1.0}
+- {t: 48.5, pose: alto_der, dur: 1.0}
+
+- {t: 51.0, pose: pinza_abre, dur: 1.0}
+- {t: 52.5, pose: pinza_cierra, dur: 1.0}
+- {t: 54.0, pose: pinza_abre, dur: 1.0}
+- {t: 55.5, pose: pinza_cierra, dur: 1.0}
+- {t: 57.0, pose: pinza_abre, dur: 1.0}
+- {t: 58.5, pose: pinza_cierra, dur: 1.0}
+
+- {t: 61.0, pose: u_izq_alta, dur: 1.0}
+- {t: 62.5, pose: u_izq_baja, dur: 0.5}
+- {t: 63.5, pose: u_der_baja, dur: 0.8}
+- {t: 64.5, pose: u_der_alta, dur: 0.5}
+- {t: 65.5, pose: u_izq_alta, dur: 0.8}
+- {t: 66.5, pose: u_izq_baja, dur: 0.5}
+- {t: 67.5, pose: u_der_baja, dur: 0.8}
+- {t: 68.5, pose: u_der_alta, dur: 0.5}
+- {t: 69.5, pose: u_izq_alta, dur: 0.8}
+- {t: 70.5, pose: u_izq_baja, dur: 0.5}
+- {t: 71.5, pose: u_der_baja, dur: 0.8}
+- {t: 72.5, pose: u_der_alta, dur: 0.5}
+- {t: 74.0, pose: alto_izq, dur: 1.0}
+- {t: 75.5, pose: alto_der, dur: 1.0}
+- {t: 77.0, pose: alto_izq, dur: 1.0}
+- {t: 78.5, pose: alto_der, dur: 1.0}
+- {t: 80.0, pose: alto_izq, dur: 1.0}
+- {t: 81.5, pose: alto_der, dur: 1.0}
+- {t: 83.0, pose: alto_izq, dur: 1.0}
+
+- {t: 84.5, pose: alto_der, dur: 3.5}

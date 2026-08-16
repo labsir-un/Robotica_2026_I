@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="ros2_control_phantomx_pincher" params="prefix plugin command_interface"/>
+</robot>

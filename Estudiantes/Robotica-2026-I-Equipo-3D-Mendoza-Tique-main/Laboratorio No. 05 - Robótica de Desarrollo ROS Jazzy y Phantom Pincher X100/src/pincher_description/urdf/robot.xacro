@@ -1,0 +1,415 @@
+<?xml version="1.0"?>
+<!-- Xacro autónomo para PhantomX Pincher Robot Arm (basado en phantomx_pincher_description).
+     Adaptado para funcionar sin dependencias externas (sin phantomx_pincher_hardware.xacro).
+     Solo necesita las mallas STL en pincher_description/meshes/.
+-->
+<robot name="phantomx_pincher" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="use_meshes" default="true"/>
+
+  <!-- ===================================================================== -->
+  <!-- Propiedades dimensionales de los componentes Bioloid / AX-12A         -->
+  <!-- ===================================================================== -->
+  <xacro:property name="ax12_height" value="0.032"/>
+  <xacro:property name="ax12_width" value="0.038"/>
+  <xacro:property name="ax12_depth" value="0.025"/>
+  <xacro:property name="f2_height" value="0.0265"/>
+  <xacro:property name="f3_height" value="0.009"/>
+  <xacro:property name="f4_height" value="0.0525"/>
+  <xacro:property name="f10_height" value="0.004"/>
+  <xacro:property name="finger_length" value="0.044"/>
+  <xacro:property name="finger_width" value="0.022"/>
+  <xacro:property name="finger_thickness" value="0.003"/>
+  <xacro:property name="finger_centre_offset_x" value="0.019"/>
+  <xacro:property name="finger_centre_offset_y" value="0.0115"/>
+
+  <!-- Límites articulares -->
+  <xacro:property name="joints_velocity_limit" value="${pi/2}"/>
+  <xacro:property name="pan_joint_lower_limit" value="${-150*pi/180}"/>
+  <xacro:property name="pan_joint_upper_limit" value="${150*pi/180}"/>
+  <xacro:property name="shoulder_joint_lower_limit" value="${-120*pi/180}"/>
+  <xacro:property name="shoulder_joint_upper_limit" value="${120*pi/180}"/>
+  <xacro:property name="elbow_joint_lower_limit" value="${-139*pi/180}"/>
+  <xacro:property name="elbow_joint_upper_limit" value="${139*pi/180}"/>
+  <xacro:property name="wrist_joint_lower_limit" value="${-98*pi/180}"/>
+  <xacro:property name="wrist_joint_upper_limit" value="${103*pi/180}"/>
+
+  <!-- Longitudes derivadas de la cadena para el modo caja -->
+  <!-- Longitud del eslabón del hombro al codo (shoulder_lift a elbow) -->
+  <xacro:property name="upper_arm_length" value="${f4_height + f10_height*3.5 + f3_height + ax12_height}"/>
+  <!-- Longitud del eslabón del codo a la muñeca (elbow a wrist) -->
+  <xacro:property name="forearm_length" value="${f4_height + f10_height*3.5 + f3_height + ax12_height}"/>
+  <!-- Longitud del eslabón de la muñeca al gripper -->
+  <xacro:property name="wrist_length" value="${f2_height + f3_height + ax12_width/2}"/>
+
+  <!-- ===================================================================== -->
+  <!-- Materiales                                                            -->
+  <!-- ===================================================================== -->
+  <material name="black">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+  <material name="grey">
+    <color rgba="0.5 0.5 0.5 1.0"/>
+  </material>
+
+  <!-- ===================================================================== -->
+  <!-- Macro para visual con malla o geometría simplificada                  -->
+  <!-- ===================================================================== -->
+  <xacro:macro name="visual_element" params="mesh mesh_xyz mesh_rpy mesh_scale box_size box_xyz box_rpy material:=black">
+    <xacro:if value="$(arg use_meshes)">
+      <visual>
+        <origin xyz="${mesh_xyz}" rpy="${mesh_rpy}"/>
+        <geometry>
+          <mesh filename="package://pincher_description/meshes/${mesh}" scale="${mesh_scale}"/>
+        </geometry>
+        <material name="${material}"/>
+      </visual>
+    </xacro:if>
+    <xacro:unless value="$(arg use_meshes)">
+      <visual>
+        <origin xyz="${box_xyz}" rpy="${box_rpy}"/>
+        <geometry>
+          <box size="${box_size}"/>
+        </geometry>
+        <material name="${material}"/>
+      </visual>
+    </xacro:unless>
+  </xacro:macro>
+
+  <!-- ===================================================================== -->
+  <!-- World frame y base                                                    -->
+  <!-- ===================================================================== -->
+  <link name="world"/>
+
+  <joint name="fixed_world" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+  <link name="base_link"/>
+
+  <!-- ===================================================================== -->
+  <!-- Shoulder Pan - Servo AX-12 fijo + bracket F3 fijo + revolute          -->
+  <!-- ===================================================================== -->
+  <!-- Servo del shoulder pan (fijo a la base) -->
+  <joint name="arm_shoulder_pan_servo_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="${pi/2} 0.0 ${pi/2}"/>
+    <parent link="base_link"/>
+    <child link="arm_shoulder_pan_servo_link"/>
+  </joint>
+
+  <link name="arm_shoulder_pan_servo_link">
+    <xacro:visual_element
+      mesh="servo_ax12a.stl"
+      mesh_xyz="0 0 0.0"
+      mesh_rpy="$0 0 0"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="${ax12_depth} ${ax12_width} ${ax12_height}"
+      box_xyz="0 0 ${ax12_height/2}"
+      box_rpy="0 0 0"/>
+  </link>
+
+  <!-- Bracket F3 fijo (NO rota con la articulación 1) -->
+  <joint name="arm_shoulder_pan_bracket_joint" type="fixed">
+    <origin xyz="0 ${ax12_width/2} 0.0" rpy="${-pi/2} ${pi/2} ${pi}"/>
+    <parent link="arm_shoulder_pan_servo_link"/>
+    <child link="arm_shoulder_pan_link"/>
+  </joint>
+
+  <link name="arm_shoulder_pan_link">
+    <xacro:visual_element
+      mesh="bracket_shoulder_F3.stl"
+      mesh_xyz="0 0 0.1"
+      mesh_rpy="0 ${pi} 0"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="0.025 0.038 ${f3_height}"
+      box_xyz="0 0 ${f3_height/2}"
+      box_rpy="0 0 0"
+      material="grey"/>
+  </link>
+
+  <!-- Articulación de paneo del hombro (shoulder pan) - rota todo lo que va después -->
+  <joint name="arm_shoulder_pan_joint" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="arm_shoulder_pan_link"/>
+    <child link="arm_shoulder_pan_rotating_link"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="${pan_joint_lower_limit}" upper="${pan_joint_upper_limit}"
+           effort="1.5" velocity="${joints_velocity_limit}"/>
+  </joint>
+
+  <link name="arm_shoulder_pan_rotating_link"/>
+
+  <!-- ===================================================================== -->
+  <!-- Shoulder Lift - Servo AX-12 fijo + bracket F4 revolute                -->
+  <!-- ===================================================================== -->
+  <joint name="arm_shoulder_lift_servo_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${-ax12_height - f10_height + 0.001}" rpy="0.0 ${pi} 0.0"/>
+    <parent link="arm_shoulder_pan_rotating_link"/>
+    <child link="arm_shoulder_lift_servo_link"/>
+  </joint>
+
+  <link name="arm_shoulder_lift_servo_link">
+    <xacro:visual_element
+      mesh="servo_ax12a.stl"
+      mesh_xyz="0 0 ${-0.042}"
+      mesh_rpy="${pi} ${pi} 0"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="${ax12_depth} ${ax12_width} ${ax12_height}"
+      box_xyz="0 0 ${ax12_height/2}"
+      box_rpy="0 0 0"/>
+  </link>
+
+  <joint name="arm_shoulder_lift_joint" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="arm_shoulder_lift_servo_link"/>
+    <child link="arm_shoulder_lift_link"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="${shoulder_joint_lower_limit}" upper="${shoulder_joint_upper_limit}"
+           effort="1.5" velocity="${joints_velocity_limit}"/>
+  </joint>
+
+  <link name="arm_shoulder_lift_link">
+    <xacro:visual_element
+      mesh="bracket_upper_arm_F4.stl"
+      mesh_xyz="0 0 0"
+      mesh_rpy="0 0 0"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="0.028 0.038 ${f4_height}"
+      box_xyz="0 0 ${f4_height/2}"
+      box_rpy="0 0 0"
+      material="grey"/>
+  </link>
+
+  <!-- Spacer F10 plates (shoulder to elbow) -->
+  <joint name="arm_shoulder_F10_0_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f4_height + f10_height/2}" rpy="0 0 0"/>
+    <parent link="arm_shoulder_lift_link"/>
+    <child link="arm_shoulder_F10_0_link"/>
+  </joint>
+  <link name="arm_shoulder_F10_0_link"/>
+
+  <joint name="arm_shoulder_F10_1_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f10_height}" rpy="0 0 0"/>
+    <parent link="arm_shoulder_F10_0_link"/>
+    <child link="arm_shoulder_F10_1_link"/>
+  </joint>
+  <link name="arm_shoulder_F10_1_link"/>
+
+  <joint name="arm_shoulder_F10_2_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f10_height}" rpy="0 0 0"/>
+    <parent link="arm_shoulder_F10_1_link"/>
+    <child link="arm_shoulder_F10_2_link"/>
+  </joint>
+  <link name="arm_shoulder_F10_2_link"/>
+
+  <!-- F3 bracket at end of shoulder section -->
+  <joint name="arm_shoulder_F3_0_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f10_height/2}" rpy="0.0 ${pi} 0.0"/>
+    <parent link="arm_shoulder_F10_2_link"/>
+    <child link="arm_shoulder_F3_0_link"/>
+  </joint>
+  <link name="arm_shoulder_F3_0_link"/>
+
+  <!-- ===================================================================== -->
+  <!-- Elbow - Servo AX-12 fijo + bracket F4 revolute                        -->
+  <!-- ===================================================================== -->
+  <joint name="arm_elbow_flex_servo_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${-ax12_height - f10_height + 0.001}" rpy="0.0 ${pi} 0.0"/>
+    <parent link="arm_shoulder_F3_0_link"/>
+    <child link="arm_elbow_flex_servo_link"/>
+  </joint>
+
+  <link name="arm_elbow_flex_servo_link">
+    <xacro:visual_element
+      mesh="servo_ax12a.stl"
+      mesh_xyz="0 0 0"
+      mesh_rpy="${pi} 0 {pi}"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="${ax12_depth} ${ax12_width} ${ax12_height}"
+      box_xyz="0 0 ${ax12_height/2}"
+      box_rpy="0 0 0"/>
+  </link>
+
+  <joint name="arm_elbow_flex_joint" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="arm_elbow_flex_servo_link"/>
+    <child link="arm_elbow_flex_link"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="${elbow_joint_lower_limit}" upper="${elbow_joint_upper_limit}"
+           effort="1.5" velocity="${joints_velocity_limit}"/>
+  </joint>
+
+  <link name="arm_elbow_flex_link">
+    <xacro:visual_element
+      mesh="bracket_upper_arm_F4.stl"
+      mesh_xyz="0 0 0"
+      mesh_rpy="0 0 0"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="0.028 0.038 ${f4_height}"
+      box_xyz="0 0 ${f4_height/2}"
+      box_rpy="0 0 0"
+      material="grey"/>
+  </link>
+
+  <!-- Spacer F10 plates (elbow to wrist) -->
+  <joint name="arm_elbow_F10_0_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f4_height + f10_height/2}" rpy="0 0 0"/>
+    <parent link="arm_elbow_flex_link"/>
+    <child link="arm_elbow_F10_0_link"/>
+  </joint>
+  <link name="arm_elbow_F10_0_link"/>
+
+  <joint name="arm_elbow_F10_1_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f10_height}" rpy="0 0 0"/>
+    <parent link="arm_elbow_F10_0_link"/>
+    <child link="arm_elbow_F10_1_link"/>
+  </joint>
+  <link name="arm_elbow_F10_1_link"/>
+
+  <joint name="arm_elbow_F10_2_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f10_height}" rpy="0 0 0"/>
+    <parent link="arm_elbow_F10_1_link"/>
+    <child link="arm_elbow_F10_2_link"/>
+  </joint>
+  <link name="arm_elbow_F10_2_link"/>
+
+  <!-- F3 bracket at end of elbow section -->
+  <joint name="arm_elbow_F3_0_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f10_height/2}" rpy="0.0 ${pi} 0.0"/>
+    <parent link="arm_elbow_F10_2_link"/>
+    <child link="arm_elbow_F3_0_link"/>
+  </joint>
+  <link name="arm_elbow_F3_0_link"/>
+
+  <!-- ===================================================================== -->
+  <!-- Wrist - Servo AX-12 fijo + bracket F2 revolute                        -->
+  <!-- ===================================================================== -->
+  <joint name="arm_wrist_flex_servo_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${-ax12_height - f10_height + 0.001}" rpy="0.0 ${pi} 0.0"/>
+    <parent link="arm_elbow_F3_0_link"/>
+    <child link="arm_wrist_flex_servo_link"/>
+  </joint>
+
+  <link name="arm_wrist_flex_servo_link">
+    <xacro:visual_element
+      mesh="servo_ax12a.stl"
+      mesh_xyz="0 0 0"
+      mesh_rpy="${pi} 0 {pi}"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="${ax12_depth} ${ax12_width} ${ax12_height}"
+      box_xyz="0 0 ${ax12_height/2}"
+      box_rpy="0 0 0"/>
+  </link>
+
+  <joint name="arm_wrist_flex_joint" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="arm_wrist_flex_servo_link"/>
+    <child link="arm_wrist_flex_link"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="${wrist_joint_lower_limit}" upper="${wrist_joint_upper_limit}"
+           effort="1.5" velocity="${joints_velocity_limit}"/>
+  </joint>
+
+  <link name="arm_wrist_flex_link">
+    <xacro:visual_element
+      mesh="bracket_wrist_F2.stl"
+      mesh_xyz="0 0 0"
+      mesh_rpy="0 0 0"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="0.025 0.038 ${f2_height}"
+      box_xyz="0 0 ${f2_height/2}"
+      box_rpy="0 0 0"
+      material="grey"/>
+  </link>
+
+  <!-- F3 bracket at wrist end -->
+  <joint name="arm_wrist_F3_0_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${f2_height}" rpy="0 ${pi} ${-pi}"/>
+    <parent link="arm_wrist_flex_link"/>
+    <child link="arm_wrist_F3_0_link"/>
+  </joint>
+  <link name="arm_wrist_F3_0_link"/>
+
+  <!-- ===================================================================== -->
+  <!-- Gripper - Servo AX-12 fijo + base de pinza + dedos                    -->
+  <!-- ===================================================================== -->
+  <joint name="gripper_servo_joint" type="fixed">
+    <origin xyz="0.0 0.0 ${-ax12_width/2}" rpy="${pi/2} ${pi} ${pi/2}"/>
+    <parent link="arm_wrist_F3_0_link"/>
+    <child link="gripper_servo_link"/>
+  </joint>
+
+  <link name="gripper_servo_link"/>
+
+  <!-- Base del gripper (finger base) -->
+  <joint name="gripper_finger_base_joint" type="fixed">
+    <origin xyz="0 ${ax12_width/2} 0.0" rpy="${pi} 0.0 ${pi/2}"/>
+    <parent link="gripper_servo_link"/>
+    <child link="gripper_finger_base_link"/>
+  </joint>
+
+  <link name="gripper_finger_base_link"/>
+
+  <!-- Dedo 1 del gripper (prismático - cierre lineal) -->
+  <joint name="gripper_finger1_joint" type="prismatic">
+    <origin xyz="${finger_centre_offset_x} ${-finger_centre_offset_y} 0.0" rpy="${pi/2} ${pi} ${pi/2}"/>
+    <parent link="gripper_finger_base_link"/>
+    <child link="gripper_finger1_link"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0.0" upper="0.018" effort="1.0" velocity="0.05"/>
+  </joint>
+
+  <link name="gripper_finger1_link">
+    <xacro:visual_element
+￼
+￼
+￼
+￼
+￼
+Auto
+Autopilot
+￼
+      mesh="gripper_finger.stl"
+      mesh_xyz="0 0 -0.011"
+      mesh_rpy="0 0 ${pi/2}"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="${finger_length} ${finger_width} ${finger_thickness}"
+      box_xyz="${finger_length/2} 0 0"
+      box_rpy="0 0 0"
+      material="grey"/>
+  </link>
+
+  <!-- Dedo 2 del gripper (mimic del dedo 1 - prismático) -->
+  <joint name="gripper_finger2_joint" type="prismatic">
+    <origin xyz="${finger_centre_offset_x} ${finger_centre_offset_y} 0.0" rpy="${pi/2} 0.0 ${pi/2}"/>
+    <parent link="gripper_finger_base_link"/>
+    <child link="gripper_finger2_link"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0.0" upper="0.018" effort="1.0" velocity="0.05"/>
+    <mimic joint="gripper_finger1_joint" multiplier="1.0" offset="0.0"/>
+  </joint>
+
+  <link name="gripper_finger2_link">
+    <xacro:visual_element
+      mesh="gripper_finger.stl"
+      mesh_xyz="0 0 -0.011"
+      mesh_rpy="0 0 ${pi/2}"
+      mesh_scale="0.001 0.001 0.001"
+      box_size="${finger_length} ${finger_width} ${finger_thickness}"
+      box_xyz="${finger_length/2} 0 0"
+      box_rpy="0 0 0"
+      material="grey"/>
+  </link>
+
+  <!-- ===================================================================== -->
+  <!-- End effector (link virtual)                                           -->
+  <!-- ===================================================================== -->
+  <joint name="end_effector_joint" type="fixed">
+    <origin xyz="${finger_centre_offset_x} 0.0 0.0" rpy="${pi/2} ${-pi/2} ${pi/2}"/>
+    <parent link="gripper_finger_base_link"/>
+    <child link="end_effector"/>
+  </joint>
+
+  <link name="end_effector"/>
+
+</robot>

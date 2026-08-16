@@ -1,0 +1,692 @@
+MODULE Module1
+!===========================================================
+! CONSTANTES - ESTADOS
+!===========================================================
+CONST num EST_STANDBY := 0;
+CONST num EST_CALIB   := 1;
+CONST num EST_RUN     := 2;
+CONST num EST_DONE    := 3;
+CONST num EST_FAULT   := 4;
+
+!===========================================================
+! CONSTANTES - TIEMPOS
+!===========================================================
+CONST num T_SONDEO      := 2;  ! Sondeo de ordenes. Debe ser
+                                 ! menor que el pulso remoto
+                                 ! mas corto (300 ms).
+CONST num T_GRIPPER     := 1;    ! Espera del gripper en simulacion
+CONST num T_ESPERA_GRIP := 2;    ! MaxTime de DI_04 (solo con USAR_GRIPOK)
+
+! --- Tiempos de banda. AJUSTAR EN LA ESTACION ---
+!
+! T_RETROCESO define la marca. T_PASO debe reproducir esa
+! MISMA distancia pero en sentido contrario. No se puede dar
+! por hecho que sean iguales: la velocidad de la banda puede
+! diferir entre FWD y BWD por carga, tension o duty del
+! motor. Se ajustan por separado y se verifican con una caja
+! de prueba: calibrar, avanzar T_PASO, y comprobar que la
+! caja vuelve al punto de suelta.
+CONST num T_RETROCESO := 5;      ! Calibracion: carga -> marca
+CONST num T_PASO      := 5;      ! Produccion:  marca -> carga
+CONST num T_ENVIO     := 6;      ! Expulsion final de la tanda
+
+!===========================================================
+! CONSTANTES - PROCESO
+!===========================================================
+CONST num N_PCBS := 2;         ! Placas por tanda
+
+! Pausa de confirmacion antes de cada caja a partir de la
+! segunda.
+!   TRUE  -> la maquina espera a que el operario confirme
+!            que la caja siguiente ya esta en la marca
+!   FALSE -> encadena las cajas sin pausa (exige que la
+!            banda venga precargada con todas las cajas
+!            espaciadas un paso exacto)
+CONST bool CONFIRMAR_CAJA := FALSE;
+
+! Confirmacion real del gripper mediante DI_04.
+!   TRUE  -> robot real: espera gripOK y detecta fallo de sujecion
+!   FALSE -> simulacion: temporiza y no consulta la entrada
+CONST bool USAR_GRIPOK := FALSE;
+
+!===========================================================
+! HERRAMIENTA Y OBJETOS DE TRABAJO
+!===========================================================
+PERS tooldata toolGripper:=[TRUE,[[5.679722754,2.287280651,120.075445417],[1,0,0,0]],[1,[0,0,1],[1,0,0,0],0,0,0]];
+
+PERS wobjdata wobj_Mesa:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];
+PERS wobjdata wobj_Banda:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];
+
+!===========================================================
+! POSICION DE REPOSO
+!===========================================================
+CONST jointtarget Home_ABS:=[[0,0,0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+!===========================================================
+! TARGETS - TOMA DE PCBs
+!
+! Herramienta vertical hacia abajo. Approach 80 mm por
+! encima del PCB, descenso vertical puro hasta Grab.
+! Familia: brazo adelante, eje 1 alrededor de -78.
+!===========================================================
+CONST robtarget pPCB1_Approach:=[[96,-439,376.51],[0,0,1,0],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+CONST robtarget pPCB1Grab:=[[96,-439,296.51],[0,0,1,0],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+CONST robtarget pPCB2_Approach:=[[96,-549,376.51],[0,0,1,0],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+CONST robtarget pPCB2Grab:=[[96,-549,296.51],[0,0,1,0],[-1,0,-1,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+!===========================================================
+! TARGETS - DEPOSITO EN LA CAJA SOBRE LA BANDA
+!
+! Punto de carga: donde el operario coloca la caja durante
+! la puesta a punto, y donde queda toda caja tras un avance
+! de T_PASO desde la marca. Approach 330 mm por encima del
+! punto de suelta, descenso vertical puro.
+! Familia: brazo adelante, eje 1 alrededor de 6.
+!===========================================================
+CONST robtarget pCajaApproach:=[[582,63.5,408],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+CONST robtarget pCajaPlace:=[[582,63.5,78],[0,0,1,0],[0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+
+!===========================================================
+! VARIABLES DE ESTADO
+!
+! bReferenciaMarcada es la unica bandera de proceso: dice si
+! la marca fisica existe. Sobrevive a STOP y a FAULT, y solo
+! se invalida al entrar en una nueva puesta a punto.
+!===========================================================
+VAR num  nPiezas             := 0;
+PERS num nPiezasTot          := 0;
+VAR num  nComandoGripper     := 0;   ! 0 = abierto, 1 = cerrado sobre PCB
+VAR bool bReferenciaMarcada  := FALSE;
+
+!***********************************************************
+!   BUCLE PRINCIPAL
+!***********************************************************
+PROC main()
+    Inicializar;
+    WHILE TRUE DO
+        PublicarEstado EST_STANDBY;
+        EsperarOrden;
+    ENDWHILE
+ENDPROC
+
+!***********************************************************
+!   ARRANQUE
+!***********************************************************
+
+!-----------------------------------------------------------
+! Inicializacion. Publica FAULT mientras la posicion del
+! robot es desconocida. Retira el robot del area de la banda
+! ANTES de lanzar la puesta a punto, porque durante la
+! calibracion el operario mete las manos sobre la banda.
+!-----------------------------------------------------------
+PROC Inicializar()
+    TPErase;
+    TPWrite "========================================";
+    TPWrite " ETAPA 4 - ALIMENTACION DE PCBs";
+    TPWrite "========================================";
+
+    ConfL \On;
+    ConfJ \On;
+    SingArea \Off;
+
+    PublicarEstado EST_FAULT;
+
+    AbrirGripper;
+    IrAHome;
+
+    nPiezas := 0;
+    Reset FWD_Conveyor;
+    Reset BWD_Conveyor;
+
+    ! Fuerzo a TRUE para que no pida calibracion al inicio
+    bReferenciaMarcada := TRUE; 
+
+    TPWrite "ETAPA 4 LISTA. PULSE START (DI01).";
+    PublicarEstado EST_STANDBY;
+        CalibrarBanda;
+ENDPROC
+
+!***********************************************************
+!   PUESTA A PUNTO DE LA BANDA
+!***********************************************************
+
+!-----------------------------------------------------------
+! Establece el PUNTO DE ENTRADA de las cajas.
+!
+! No mide nada por si sola: el que mide es el operario, y lo
+! que la rutina hace es MOVER LA BANDA la distancia exacta
+! que separa el punto de carga del punto de entrada, para
+! que esa distancia quede materializada en una marca.
+!
+! Precondiciones:
+!   - Robot en HOME (fuera del area de la banda)
+!   - Una sola caja vacia sobre la banda
+!
+! Postcondiciones:
+!   - La marca existe sobre la guia
+!   - La caja queda EN LA MARCA, lista para el primer paso
+!   - bReferenciaMarcada = TRUE
+!
+! Deja el estado en CALIB. Es responsabilidad del que llama
+! publicar el estado siguiente.
+!-----------------------------------------------------------
+PROC CalibrarBanda()
+    bReferenciaMarcada := FALSE;
+
+    PublicarEstado EST_CALIB;
+
+    Reset FWD_Conveyor;
+    Reset BWD_Conveyor;
+
+    TPWrite "========================================";
+    TPWrite " PUESTA A PUNTO DE LA BANDA";
+    TPWrite "----------------------------------------";
+    TPWrite " PASO 1 de 3";
+    TPWrite " Coloque UNA caja vacia sobre la banda,";
+    TPWrite " centrada bajo el punto donde el robot";
+    TPWrite " suelta el PCB.";
+    TPWrite "";
+    TPWrite " Pulse START (DI01) cuando este lista.";
+    TPWrite "========================================";
+
+    EsperarConfirmacion;
+
+    TPWrite "----------------------------------------";
+    TPWrite " PASO 2 de 3";
+    TPWrite " Retrocediendo " + NumToStr(T_RETROCESO,1) + " s";
+    TPWrite " ALEJESE DE LA BANDA";
+    TPWrite "----------------------------------------";
+
+    Reset FWD_Conveyor;
+    Set BWD_Conveyor;
+    WaitTime T_RETROCESO;
+    Reset BWD_Conveyor;
+
+    TPWrite "----------------------------------------";
+    TPWrite " PASO 3 de 3";
+    TPWrite " MARQUE sobre la guia la posicion en la";
+    TPWrite " que quedo la caja. Esa marca es el";
+    TPWrite " PUNTO DE ENTRADA de todas las cajas.";
+    TPWrite "";
+    TPWrite " NO mueva la caja: ya esta en su sitio.";
+    TPWrite " Pulse START para terminar.";
+    TPWrite "----------------------------------------";
+
+    EsperarConfirmacion;
+
+    bReferenciaMarcada := TRUE;
+
+    TPWrite "========================================";
+    TPWrite " REFERENCIA ESTABLECIDA";
+    TPWrite " Un avance de " + NumToStr(T_PASO,1) + " s lleva";
+    TPWrite " cualquier caja de la marca a la carga.";
+    TPWrite "========================================";
+ENDPROC
+
+!-----------------------------------------------------------
+! Traslada la caja desde la marca hasta el punto de carga.
+!
+! El mismo movimiento desplaza un paso aguas abajo la caja
+! que acababa de llenarse, de modo que un unico avance
+! resuelve la salida de una caja y la entrada de la
+! siguiente. Por eso no hay reversa dentro del ciclo.
+!-----------------------------------------------------------
+PROC PosicionarCaja()
+    IF NOT bReferenciaMarcada THEN
+        DeclararFalla "Banda sin referencia. Calibre con DI02";
+        RETURN;
+    ENDIF
+
+    Reset BWD_Conveyor;
+    Set FWD_Conveyor;
+    WaitTime T_PASO;
+    Reset FWD_Conveyor;
+
+    TPWrite "    CAJA EN POSICION DE CARGA";
+ENDPROC
+
+!-----------------------------------------------------------
+! Avance libre de la banda durante el tiempo indicado.
+! Se usa solo para la expulsion final de la tanda.
+!-----------------------------------------------------------
+PROC AvanzarBanda(num nTiempo)
+    Reset BWD_Conveyor;
+    Set FWD_Conveyor;
+    WaitTime nTiempo;
+    Reset FWD_Conveyor;
+ENDPROC
+
+!***********************************************************
+!   ESPERA DE ORDENES
+!***********************************************************
+
+!-----------------------------------------------------------
+! Estado STANDBY.
+!   START    (DI_01) -> arranca la tanda directa
+!   CALIBRAR (DI_02) -> nueva puesta a punto
+!   HOME     (DI_03) -> regreso a reposo automat.
+!-----------------------------------------------------------
+PROC EsperarOrden()
+    WHILE TRUE DO
+        IF OrdenHome() THEN
+            EsperarLiberacion;
+            IrAHome;
+            PublicarEstado EST_STANDBY;
+        ENDIF
+
+        IF OrdenCalibrar() THEN
+            EsperarLiberacion;
+            IrAHome;
+            CalibrarBanda;
+            PublicarEstado EST_STANDBY;
+        ENDIF
+
+        IF OrdenStart() THEN
+            EsperarLiberacion;
+            bReferenciaMarcada := TRUE; ! Garantiza que avance directo
+            PublicarEstado EST_RUN;
+            CicloEtapa4;
+            RETURN;
+        ENDIF
+
+        WaitTime T_SONDEO;
+    ENDWHILE
+ENDPROC
+
+!-----------------------------------------------------------
+! Espera un pulso de START limpio, con supresion de flancos
+! a ambos lados. Se usa en los dialogos de la puesta a punto
+! y en la confirmacion de caja.
+!-----------------------------------------------------------
+PROC EsperarConfirmacion()
+    EsperarLiberacion;
+!    WHILE NOT OrdenStart() DO
+!        WaitTime T_SONDEO;
+!    ENDWHILE
+    IF DI_01 = 1 THEN 
+        SET FWD_Conveyor;
+    ENDIF
+
+
+
+    EsperarLiberacion;
+ENDPROC
+
+!***********************************************************
+!   CICLO DE PRODUCCION
+!***********************************************************
+
+!-----------------------------------------------------------
+! Estado RUN. Una placa por caja.
+!
+! Cada iteracion empieza con un avance de un paso. Ese
+! avance trae la caja i desde la marca hasta la carga y, de
+! paso, saca de la carga la caja i-1 ya llena. La primera
+! caja llega a la marca durante la puesta a punto; de la
+! segunda en adelante la coloca el operario.
+!-----------------------------------------------------------
+PROC CicloEtapa4()
+    VAR num i;
+
+    TPWrite "========================================";
+    TPWrite " CICLO INICIADO (" + NumToStr(N_PCBS,0) + " PCBs)";
+    TPWrite "========================================";
+
+    FOR i FROM 1 TO N_PCBS DO
+
+        IF CONFIRMAR_CAJA AND i > 1 THEN
+            PublicarEstado EST_CALIB;
+            TPWrite "----------------------------------------";
+            TPWrite " COLOQUE LA CAJA " + NumToStr(i,0) + " EN LA MARCA";
+            TPWrite " Y PULSE START (DI01)";
+            TPWrite "----------------------------------------";
+            EsperarConfirmacion;
+            PublicarEstado EST_RUN;
+        ENDIF
+
+        PosicionarCaja;
+        VerificarParada;
+
+        TomarPCB i;
+        VerificarParada;
+
+        DepositarEnCaja;
+        VerificarParada;
+
+        TPWrite "    PCB " + NumToStr(i,0) + " DE " + NumToStr(N_PCBS,0) + " COMPLETADA";
+    ENDFOR
+
+    AvanzarBanda T_ENVIO;
+    TPWrite "    TANDA EXPULSADA";
+
+    IrAHome;
+    SenalarDone;
+ENDPROC
+
+!-----------------------------------------------------------
+! Toma de un PCB. Descenso vertical de 80 mm.
+!-----------------------------------------------------------
+PROC TomarPCB(num nPCB)
+    TPWrite "--- TOMANDO PCB " + NumToStr(nPCB,0) + " ---";
+
+    AbrirGripper;
+
+    IF nPCB = 1 THEN
+        MoveJ pPCB1_Approach,v300,z20,toolGripper\WObj:=wobj_Mesa;
+        MoveL pPCB1Grab,v50,fine,toolGripper\WObj:=wobj_Mesa;
+        CerrarSobrePCB;
+        MoveL pPCB1_Approach,v100,z20,toolGripper\WObj:=wobj_Mesa;
+    ELSE
+        MoveJ pPCB2_Approach,v300,z20,toolGripper\WObj:=wobj_Mesa;
+        MoveL pPCB2Grab,v50,fine,toolGripper\WObj:=wobj_Mesa;
+        CerrarSobrePCB;
+        MoveL pPCB2_Approach,v100,z20,toolGripper\WObj:=wobj_Mesa;
+    ENDIF
+
+    TPWrite "    PCB " + NumToStr(nPCB,0) + " TOMADA";
+ENDPROC
+
+!-----------------------------------------------------------
+! Deposito dentro de la caja. Descenso vertical de 330 mm.
+!-----------------------------------------------------------
+PROC DepositarEnCaja()
+    MoveJ pCajaApproach,v300,z10,toolGripper\WObj:=wobj_Banda;
+    MoveL pCajaPlace,v50,fine,toolGripper\WObj:=wobj_Banda;
+    AbrirGripper;
+    MoveL pCajaApproach,v100,fine,toolGripper\WObj:=wobj_Banda;
+
+    TPWrite "    PCB DEPOSITADA EN LA CAJA";
+ENDPROC
+
+!***********************************************************
+!   SENALIZACION
+!***********************************************************
+
+!-----------------------------------------------------------
+! Unico procedimiento autorizado para escribir en las tres
+! lamparas y en el bit de falla hacia el Arduino.
+!-----------------------------------------------------------
+PROC PublicarEstado(num nNuevo)
+    TEST nNuevo
+
+    CASE EST_STANDBY:
+        SetDO DO_01, 1;
+        SetDO DO_02, 0;
+        SetDO DO_03, 0;
+        SetDO DO_06, 0;
+
+    CASE EST_CALIB:
+        ! Verde y amarillo simultaneos. Avisa al operario de
+        ! que la maquina espera una intervencion manual.
+        SetDO DO_01, 1;
+        SetDO DO_02, 1;
+        SetDO DO_03, 0;
+        SetDO DO_06, 0;
+
+    CASE EST_RUN:
+        SetDO DO_01, 0;
+        SetDO DO_02, 1;
+        SetDO DO_03, 0;
+        SetDO DO_06, 0;
+
+    CASE EST_DONE:
+        ! El verde lo gobierna SenalarDone con el parpadeo
+        SetDO DO_02, 0;
+        SetDO DO_03, 0;
+        SetDO DO_06, 0;
+
+    CASE EST_FAULT:
+        SetDO DO_01, 0;
+        SetDO DO_02, 0;
+        SetDO DO_03, 1;
+        SetDO DO_06, 1;
+
+    DEFAULT:
+        ! Estado no previsto: se trata como falla
+        SetDO DO_01, 0;
+        SetDO DO_02, 0;
+        SetDO DO_03, 1;
+        SetDO DO_06, 1;
+
+    ENDTEST
+ENDPROC
+
+!-----------------------------------------------------------
+! Estado DONE. Parpadeo del verde a 2 Hz durante 2 s.
+!
+! El bucle es acotado y se ejecuta con el robot detenido, de
+! modo que no se requiere la opcion Multitasking.
+!-----------------------------------------------------------
+PROC SenalarDone()
+    VAR num i;
+
+    PublicarEstado EST_DONE;
+
+    nPiezas    := nPiezas + N_PCBS;
+    nPiezasTot := nPiezasTot + N_PCBS;
+
+    TPWrite "========================================";
+    TPWrite " TANDA COMPLETA";
+    TPWrite " CONTADOR DEL TURNO: " + NumToStr(nPiezas,0);
+    TPWrite " TOTAL ACUMULADO:    " + NumToStr(nPiezasTot,0);
+    TPWrite "========================================";
+
+    FOR i FROM 1 TO 4 DO
+        SetDO DO_01, 1;
+        WaitTime 0.25;
+        SetDO DO_01, 0;
+        WaitTime 0.25;
+    ENDFOR
+
+    PublicarEstado EST_STANDBY;
+ENDPROC
+
+!***********************************************************
+!   LECTURA DE ORDENES
+!***********************************************************
+
+! START asignado a DI_01 - inicia la rutina directamente
+FUNC bool OrdenStart()
+    RETURN DI_01 = 1;
+ENDFUNC
+
+! CALIBRAR asignado a DI_02
+FUNC bool OrdenCalibrar()
+    RETURN DI_02 = 1;
+ENDFUNC
+
+! HOME automático asignado a DI_03
+FUNC bool OrdenHome()
+    RETURN DI_03 = 1;
+ENDFUNC
+
+! STOP reasignado a DI_05 (para dejar DI_02 a Calibrar)
+FUNC bool OrdenStop()
+    RETURN DI_05 = 1;
+ENDFUNC
+
+! RESET reasignado a DI_06 (para dejar DI_03 a Home)
+FUNC bool OrdenReset()
+    RETURN DI_06 = 1;
+ENDFUNC
+
+!-----------------------------------------------------------
+! Deteccion por flanco. Evita que un pulso remoto o un
+! pulsador mantenido generen ordenes repetidas.
+!-----------------------------------------------------------
+PROC EsperarLiberacion()
+    WHILE OrdenStart() OR OrdenHome() OR OrdenCalibrar() OR OrdenStop() OR OrdenReset() DO
+        WaitTime T_SONDEO;
+    ENDWHILE
+ENDPROC
+
+!-----------------------------------------------------------
+! Parada ordenada. Se invoca ENTRE movimientos, nunca a
+! mitad de una trayectoria: detener a mitad dejaria el robot
+! en una posicion desconocida.
+!
+! Si el gripper sostiene un PCB, se conserva la pieza
+! durante el regreso a HOME y solo se libera alli, en un
+! punto conocido y despejado.
+!
+! La marca de la banda NO se invalida: es fisica y sigue
+! ahi. Lo que se pierde es el saber que caja estaba donde,
+! asi que se exige vaciar la banda y volver a empezar desde
+! la marca.
+!
+! No es un paro de emergencia. El circuito de seguridad del
+! IRC5 es independiente y no se interviene.
+!-----------------------------------------------------------
+PROC VerificarParada()
+    IF OrdenStop() THEN
+        TPWrite "PARADA SOLICITADA POR EL OPERADOR";
+
+        Reset FWD_Conveyor;
+        Reset BWD_Conveyor;
+
+        IF nComandoGripper = 0 THEN
+            IrAHome;
+        ELSE
+            TPWrite "    PIEZA RETENIDA HASTA HOME";
+            IrAHome \Conservar;
+            AbrirGripper;
+        ENDIF
+
+        TPWrite "----------------------------------------";
+        TPWrite " RETIRE LAS CAJAS DE LA BANDA Y COLOQUE";
+        TPWrite " UNA CAJA NUEVA EN LA MARCA ANTES DE";
+        TPWrite " PULSAR START.";
+        TPWrite "----------------------------------------";
+
+        PublicarEstado EST_STANDBY;
+        Stop;
+    ENDIF
+ENDPROC
+
+!***********************************************************
+!   CONTROL DEL GRIPPER
+!
+!   Un solo bit en DO_04.
+!     DO_04 = 0  ->  abierto,  10 grados
+!     DO_04 = 1  ->  cerrado, 100 grados
+!***********************************************************
+
+!-----------------------------------------------------------
+! Espera la confirmacion del gripper.
+!
+! Con USAR_GRIPOK activo se sincroniza con DI_04, lo que
+! acelera el ciclo cuando el movimiento termina antes de lo
+! previsto, no falla cuando tarda mas, y detecta el fallo de
+! sujecion al vencer el MaxTime.
+!
+! Con USAR_GRIPOK inactivo se temporiza a ciegas, que es lo
+! adecuado en simulacion donde la entrada no existe.
+!
+! El recorrido completo de 10 a 100 grados tarda unos 675 ms
+! con el firmware del Arduino, de modo que T_GRIPPER = 1 s
+! deja margen suficiente en simulacion.
+!-----------------------------------------------------------
+PROC EsperarGripper(string sCausa)
+    VAR bool bTimeout;
+
+    IF USAR_GRIPOK THEN
+        WaitDI DI_04, 1 \MaxTime:=T_ESPERA_GRIP \TimeFlag:=bTimeout;
+        IF bTimeout THEN
+            DeclararFalla sCausa;
+        ENDIF
+    ELSE
+        WaitTime T_GRIPPER;
+    ENDIF
+ENDPROC
+
+PROC AbrirGripper()
+    SetDO DO_04, 0;
+    nComandoGripper := 0;
+    EsperarGripper "El gripper no confirmo la apertura";
+ENDPROC
+
+PROC CerrarSobrePCB()
+    SetDO DO_04, 1;
+    nComandoGripper := 1;
+    EsperarGripper "Fallo de sujecion sobre la PCB";
+ENDPROC
+
+!***********************************************************
+!   TRATAMIENTO DE FALLAS
+!***********************************************************
+
+!-----------------------------------------------------------
+! Estado FAULT. Detiene la banda, enciende la lampara roja,
+! sube el bit de falla hacia la interfaz de supervision y
+! espera el reconocimiento del operador. Ninguna otra orden
+! se atiende mientras tanto.
+!
+! Si el gripper sostiene un PCB, la pieza se conserva
+! durante el regreso a HOME y se libera alli.
+!
+! Igual que en la parada, la marca de la banda sobrevive.
+!-----------------------------------------------------------
+PROC DeclararFalla(string sCausa)
+    Reset FWD_Conveyor;
+    Reset BWD_Conveyor;
+
+    PublicarEstado EST_FAULT;
+
+    TPWrite "========================================";
+    TPWrite " FALLA: " + sCausa;
+    TPWrite " CORRIJA LA CAUSA Y PULSE RESET";
+    TPWrite "========================================";
+
+    WHILE NOT OrdenReset() DO
+        WaitTime T_SONDEO;
+    ENDWHILE
+    EsperarLiberacion;
+
+    IF nComandoGripper = 0 THEN
+        IrAHome;
+    ELSE
+        TPWrite "    PIEZA RETENIDA HASTA HOME";
+        IrAHome \Conservar;
+        AbrirGripper;
+    ENDIF
+
+    TPWrite "----------------------------------------";
+    TPWrite " RETIRE LAS CAJAS DE LA BANDA Y COLOQUE";
+    TPWrite " UNA CAJA NUEVA EN LA MARCA ANTES DE";
+    TPWrite " PULSAR START.";
+    TPWrite "----------------------------------------";
+
+    PublicarEstado EST_STANDBY;
+    Stop;
+ENDPROC
+
+!***********************************************************
+!   MOVIMIENTO A REPOSO
+!***********************************************************
+
+!-----------------------------------------------------------
+! Regreso a la posicion de reposo.
+!
+! Por defecto abre el gripper antes de moverse. Con el
+! modificador \Conservar mantiene la pieza sujeta durante
+! todo el trayecto, lo que permite retirarla en un punto
+! conocido en lugar de soltarla donde el robot este.
+!
+!   IrAHome;              -> abre y va a HOME
+!   IrAHome \Conservar;   -> va a HOME sin soltar la pieza
+!-----------------------------------------------------------
+PROC IrAHome(\switch Conservar)
+    IF NOT Present(Conservar) THEN
+        AbrirGripper;
+    ENDIF
+
+    MoveAbsJ Home_ABS, v300, fine, toolGripper;
+    TPWrite "ROBOT EN HOME";
+ENDPROC
+
+PROC CerrarSobreCaja()
+    SetDO DO_04,0;
+    SetDO DO_05,1;
+ENDPROC
+
+ENDMODULE

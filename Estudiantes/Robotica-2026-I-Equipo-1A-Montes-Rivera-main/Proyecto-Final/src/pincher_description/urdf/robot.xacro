@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<robot name="phantomx_pincher" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="use_meshes" default="true"/>
+
+  <!-- Include cell kit environment -->
+  <xacro:include filename="$(find pincher_description)/urdf/kit.xacro"/>
+
+  <!-- Include old PhantomX Pincher robot arm definition and macros -->
+  <xacro:include filename="$(find pincher_description)/urdf/phantomx_pincher_utils.xacro"/>
+  <xacro:include filename="$(find pincher_description)/urdf/phantomx_pincher_hardware.xacro"/>
+  <xacro:include filename="$(find pincher_description)/urdf/phantomx_pincher_arm.xacro"/>
+
+  <link name="world"/>
+
+  <joint name="joint_world" type="fixed">
+    <parent link="world"/>
+    <child link="world_link"/>
+  </joint>
+
+  <!-- Joint connecting cell case to old arm base -->
+  <joint name="case_to_arm_base" type="fixed">
+    <parent link="caseBaseRobot_link"/>
+    <child link="phantomx_pincher_arm_base_link"/>
+    <origin xyz="0.01325 0 0.016" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Instantiate old PhantomX Pincher robot arm -->
+  <xacro:phantomx_pincher
+      prefix="phantomx_pincher_"
+      base_link="arm_base_link"
+      collision="true"
+      mimic_finger_joints="true"
+      ros2_control="false"/>
+
+</robot>

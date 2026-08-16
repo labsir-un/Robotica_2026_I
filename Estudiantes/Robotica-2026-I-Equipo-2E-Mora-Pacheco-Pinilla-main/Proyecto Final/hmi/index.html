@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HMI &mdash; Etapa 4 &mdash; ABB IRB 140 &quot;Abel&quot;</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0e14;--surface:#131820;--surface2:#1a1f2e;--border:#252b3a;
+    --accent:#00b4d8;--accent2:#0077b6;--ok:#00e676;--warn:#ffb300;--err:#ff1744;
+    --text:#e0e0e0;--text2:#8892a4;--text3:#5a6378;
+    --grip-open:#00e676;--grip-close:#ff6d00;--radius:12px;--radius-sm:8px;
+    --font:'Segoe UI','Inter',system-ui,sans-serif;--mono:'Cascadia Code','JetBrains Mono',monospace;
+  }
+  body{
+    font-family:var(--font);background:var(--bg);color:var(--text);
+    min-height:100vh;overflow-x:hidden;
+    background-image:radial-gradient(ellipse at 20% 50%,#0d1b2a20 0%,transparent 60%),
+                      radial-gradient(ellipse at 80% 20%,#001d3d20 0%,transparent 50%);
+  }
+  header{
+    background:var(--surface);border-bottom:1px solid var(--border);
+    padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
+    backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;
+  }
+  header .brand{display:flex;align-items:center;gap:16px}
+  header .brand .logo{
+    width:40px;height:40px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;
+  }
+  header .brand h1{font-size:16px;font-weight:600;letter-spacing:-0.3px}
+  header .brand h1 span{display:block;font-size:11px;color:var(--text2);font-weight:400}
+  header .status-bar{display:flex;align-items:center;gap:18px}
+  .conn-dot{width:10px;height:10px;border-radius:50%;background:var(--err);transition:all .4s}
+  .conn-dot.on{background:var(--ok);box-shadow:0 0 12px var(--ok);animation:pulse-conn 2s infinite}
+  @keyframes pulse-conn{0%,100%{box-shadow:0 0 8px var(--ok)}50%{box-shadow:0 0 20px var(--ok),0 0 40px var(--ok)40}}
+  .btn{
+    display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--radius-sm);
+    font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;
+    transition:all .2s;text-decoration:none;white-space:nowrap;letter-spacing:-0.2px;
+  }
+  .btn-primary{background:var(--accent);color:#000;border-color:var(--accent)}
+  .btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+  .btn-outline{background:transparent;border-color:var(--border);color:var(--text)}
+  .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-sm{padding:5px 12px;font-size:11px}
+  .btn:disabled{opacity:.35;pointer-events:none}
+  main{max-width:1480px;margin:0 auto;padding:24px 28px 40px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .span2{grid-column:span 2}.span3{grid-column:span 3}.span4{grid-column:span 4}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px;transition:border-color .3s;position:relative;overflow:hidden;
+  }
+  .card:hover{border-color:#334155}
+  .card::after{
+    content:'';position:absolute;top:0;left:0;width:100%;height:2px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2),transparent);opacity:0;transition:opacity .4s;
+  }
+  .card:hover::after{opacity:1}
+  .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .card-header h3{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+  .card-header .badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;letter-spacing:.5px}
+  .badge-live{background:#00e67620;color:var(--ok)}.badge-idle{background:#ffb30020;color:var(--warn)}
+  /* Gripper animation */
+  .gripper-viz{display:flex;align-items:center;justify-content:center;height:160px;gap:0;position:relative}
+  .gripper-jaw{
+    width:44px;height:100px;background:linear-gradient(180deg,#2a3345,#1a2030);
+    border-radius:6px 6px 2px 2px;transition:transform .5s cubic-bezier(.4,0,.2,1);
+    position:relative;border:2px solid #3a4558;
+  }
+  .gripper-jaw::after{
+    content:'';position:absolute;bottom:-4px;left:4px;right:4px;height:12px;
+    background:#4a5568;border-radius:2px 2px 4px 4px;
+  }
+  .gripper-jaw.left{transform-origin:right center}
+  .gripper-jaw.right{transform-origin:left center}
+  .gripper-jaw.closed.left{transform:translateX(16px)}
+  .gripper-jaw.closed.right{transform:translateX(-16px)}
+  .gripper-pcb{
+    position:absolute;width:70px;height:10px;background:linear-gradient(90deg,#16a34a,#22c55e);
+    border-radius:2px;z-index:-1;transition:opacity .3s;opacity:0;
+    box-shadow:0 0 16px #22c55e60;
+  }
+  .gripper-pcb.visible{opacity:1}
+  .gripper-angle{
+    position:absolute;bottom:-28px;font-family:var(--mono);font-size:12px;color:var(--text2);
+    transition:color .3s;
+  }
+  /* Angle dial */
+  .angle-dial{width:130px;height:130px;margin:0 auto;position:relative}
+  .angle-dial svg{transform:rotate(-90deg)}
+  .angle-dial .bg{fill:none;stroke:var(--border);stroke-width:8}
+  .angle-dial .fg{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1)}
+  .angle-dial .val{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-family:var(--mono);font-size:28px;font-weight:700;color:#fff;
+  }
+  .angle-dial .label{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase}
+  /* Signal grid */
+  .signal-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius-sm);margin-bottom:6px;background:var(--surface2);transition:background .3s}
+  .signal-row:hover{background:#1e2638}
+  .signal-dot{width:12px;height:12px;border-radius:50%;background:var(--border);transition:all .3s;flex-shrink:0}
+  .signal-dot.high{background:var(--accent);box-shadow:0 0 10px var(--accent)}
+  .signal-dot.ok{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+  .signal-dot.warn{background:var(--warn);box-shadow:0 0 10px var(--warn)}
+  .signal-name{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);min-width:70px}
+  .signal-desc{font-size:11px;color:var(--text2);flex:1}
+  .signal-state{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px}
+  .state-on{background:#00e67620;color:var(--ok)}.state-off{background:#fff3;color:var(--text3)}
+  /* Event log */
+  .log-container{max-height:280px;overflow-y:auto;font-family:var(--mono);font-size:11px}
+  .log-container::-webkit-scrollbar{width:5px}
+  .log-container::-webkit-scrollbar-track{background:transparent}
+  .log-container::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+  .log-entry{display:flex;gap:10px;padding:5px 10px;border-radius:4px;align-items:flex-start;animation:fadeIn .3s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+  .log-time{color:var(--text3);flex-shrink:0;min-width:70px}
+  .log-type{font-weight:700;min-width:32px;text-align:center;font-size:10px;padding:1px 5px;border-radius:3px}
+  .log-type.EV{background:#0077b620;color:var(--accent)}.log-type.ST{background:#00e67620;color:var(--ok)}
+  .log-type.CMD{background:#ffb30020;color:var(--warn)}.log-type.ER{background:#ff174420;color:var(--err)}
+  .log-msg{color:var(--text2);word-break:break-all}
+  /* Telemetry bar */
+  .telemetry-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .telem-item{
+    text-align:center;background:var(--surface2);border-radius:var(--radius-sm);padding:16px 10px;
+    border:1px solid transparent;transition:all .3s;
+  }
+  .telem-item:hover{border-color:var(--accent);background:#1a2540}
+  .telem-value{
+    font-family:var(--mono);font-size:26px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .telem-value.danger{-webkit-text-fill-color:var(--err)}
+  .telem-label{font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+  /* Process step indicator */
+  .process-steps{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .step{
+    padding:8px 14px;border-radius:20px;font-size:11px;font-weight:600;
+    background:var(--surface2);color:var(--text3);border:1px solid var(--border);
+    transition:all .4s;white-space:nowrap;position:relative;
+  }
+  .step.active{background:var(--accent);color:#000;border-color:var(--accent);box-shadow:0 0 20px var(--accent)40}
+  .step.done{background:#00e67620;color:var(--ok);border-color:var(--ok)}
+  .step-arrow{color:var(--border);font-size:14px;margin:0 2px}
+  /* Pulse animation for signals */
+  @keyframes signal-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  .pulse{animation:signal-pulse 1.5s ease-in-out infinite}
+  /* COM port selector */
+  .com-selector{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  select{
+    background:var(--surface2);border:1px solid var(--border);color:var(--text);
+    padding:8px 12px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;
+    outline:none;cursor:pointer;min-width:160px;
+  }
+  select:focus{border-color:var(--accent)}
+  /* Responsive */
+  @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}.span2,.span3,.span4{grid-column:span 2}}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}.span2,.span3,.span4{grid-column:span 1}header{flex-direction:column;gap:10px}}
+  /* Tooltip */
+  .info-icon{display:inline-flex;width:16px;height:16px;border-radius:50%;border:1px solid var(--text3);align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:help;margin-left:4px}
+  /* Conveyor anim */
+  .conveyor-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;position:relative;margin:8px 0}
+  .conveyor-bar .fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .5s ease;width:0%}
+  .conveyor-bar.moving .fill{width:100%;animation:conveyor-move 1s linear infinite;background:repeating-linear-gradient(90deg,var(--accent)0,var(--accent)20px,var(--accent2)20px,var(--accent2)40px)}
+  @keyframes conveyor-move{from{background-position:0 0}to{background-position:-40px 0}}
+  /* Section title dividers */
+  .section-title{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin:10px 0 8px;padding-left:2px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">A</div>
+    <div>
+      <h1>HMI &mdash; Etapa 4: Embalaje y Envio<span>ABB IRB 140 &quot;Abel&quot; &bull; Arduino Uno &bull; Gripper SG90</span></h1>
+    </div>
+  </div>
+  <div class="status-bar">
+    <div class="com-selector">
+      <select id="comPorts"><option value="">-- Seleccionar COM --</option></select>
+      <button class="btn btn-primary btn-sm" id="btnConnect" onclick="toggleConnection()">Conectar</button>
+    </div>
+    <div class="conn-dot" id="connDot" title="Estado conexion"></div>
+    <span style="font-size:12px;color:var(--text2)" id="connLabel">Desconectado</span>
+  </div>
+</header>
+
+<main>
+  <!-- Row 1: KPIs -->
+  <div class="grid" style="margin-bottom:16px">
+    <div class="card">
+      <div class="telem-item" style="border:none;background:transparent;padding:8px">
+        <div class="telem-value" id="kpiAngle">10°</div>
+        <div class="telem-label">Angulo Servo</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="telem-item" style="border:none;background:transparent;padding:8px">
+        <div class="telem-value" id="kpiStatus">IDLE</div>
+        <div class="telem-label">Estado Sistema</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="telem-item" style="border:none;background:transparent;padding:8px">
+        <div class="telem-value" id="kpiCycles">0</div>
+        <div class="telem-label">Ciclos Completados</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="telem-item" style="border:none;background:transparent;padding:8px">
+        <div class="telem-value" id="kpiUptime">00:00</div>
+        <div class="telem-label">Tiempo Activo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Gripper + Angle dial + Comandos -->
+  <div class="grid" style="margin-bottom:16px">
+    <div class="card span2">
+      <div class="card-header"><h3>Gripper SG90 &mdash; Visualizacion</h3><span class="badge badge-live" id="gripBadge">VIVO</span></div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <div style="flex:1">
+          <div class="gripper-viz" id="gripperViz">
+            <div class="gripper-jaw left closed"></div>
+            <div class="gripper-pcb visible" id="gripperPcb"></div>
+            <div class="gripper-jaw right closed"></div>
+            <div class="gripper-angle" id="gripperAngleLabel">Abierto &bull; 10&deg;</div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+          <div class="section-title">Comandos</div>
+          <button class="btn btn-outline" onclick="sendCmd('CMD,HOME')" id="btnHome">
+            <span style="font-size:16px">&#8962;</span> Ir a HOME
+          </button>
+          <button class="btn btn-primary" onclick="sendCmd('CMD,START')" id="btnStart">
+            <span style="font-size:16px">&#9654;</span> Iniciar Ciclo
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="sendCmd('CMD,PING')">Ping</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Angulo Servo</h3></div>
+      <div class="angle-dial">
+        <svg viewBox="0 0 130 130" width="130" height="130">
+          <circle class="bg" cx="65" cy="65" r="54"/>
+          <circle class="fg" id="dialFg" cx="65" cy="65" r="54"
+            stroke-dasharray="339.292" stroke-dashoffset="320"/>
+        </svg>
+        <div class="val" id="dialVal">10&deg;</div>
+        <div class="label">0&deg; &mdash; 180&deg;</div>
+      </div>
+      <div class="section-title" style="text-align:center;margin-top:8px">Calibracion</div>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text2)">Abierto:</span>
+        <input type="range" min="0" max="180" value="10" id="calOpen" style="width:80px" oninput="document.getElementById('calOpenVal').textContent=this.value">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--accent)" id="calOpenVal">10</span>
+        <button class="btn btn-sm btn-outline" onclick="sendCmd('CMD,CAL,0,'+document.getElementById('calOpen').value)">Set</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px">
+        <span style="font-size:11px;color:var(--text2)">Cerrado:</span>
+        <input type="range" min="0" max="180" value="100" id="calClose" style="width:80px" oninput="document.getElementById('calCloseVal').textContent=this.value">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--warn)" id="calCloseVal">100</span>
+        <button class="btn btn-sm btn-outline" onclick="sendCmd('CMD,CAL,1,'+document.getElementById('calClose').value)">Set</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Senales + Banda -->
+  <div class="grid" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-header"><h3>Senales IRC5 &rarr; Arduino (INPUT)</h3></div>
+      <div class="section-title">Recibidas desde IRC5 via PC817</div>
+      <div class="signal-row"><div class="signal-dot" id="sigDO04"></div><span class="signal-name">DO_04</span><span class="signal-desc">Comando Gripper</span><span class="signal-state state-off" id="stDO04">OFF</span></div>
+      <div class="signal-row"><div class="signal-dot" id="sigDO06"></div><span class="signal-name">DO_06</span><span class="signal-desc">Bit de Falla</span><span class="signal-state state-off" id="stDO06">OFF</span></div>
+      <div class="section-title">Comandos desde botonera (cableado directo)</div>
+      <div class="signal-row"><div class="signal-dot" id="sigDI01"></div><span class="signal-name">DI_01</span><span class="signal-desc">Inicio Ciclo</span><span class="signal-state state-off" id="stDI01">OFF</span></div>
+      <div class="signal-row"><div class="signal-dot" id="sigDI02"></div><span class="signal-name">DI_02</span><span class="signal-desc">Calibracion</span><span class="signal-state state-off" id="stDI02">OFF</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Senales Arduino &rarr; IRC5 (OUTPUT)</h3></div>
+      <div class="section-title">Enviadas al IRC5 via Reles</div>
+      <div class="signal-row"><div class="signal-dot" id="sigDI04"></div><span class="signal-name">DI_04</span><span class="signal-desc">gripOK (nivel)</span><span class="signal-state state-off" id="stDI04">OFF</span></div>
+      <div class="signal-row"><div class="signal-dot" id="sigDI05"></div><span class="signal-name">DI_05</span><span class="signal-desc">HOME remoto (pulso)</span><span class="signal-state state-off" id="stDI05">OFF</span></div>
+      <div class="signal-row"><div class="signal-dot" id="sigDI06"></div><span class="signal-name">DI_06</span><span class="signal-desc">START remoto (pulso)</span><span class="signal-state state-off" id="stDI06">OFF</span></div>
+      <div class="section-title">Salidas directas RAPID</div>
+      <div class="signal-row"><div class="signal-dot" id="sigFWD"></div><span class="signal-name">FWD</span><span class="signal-desc">Banda Adelante</span><span class="signal-state state-off" id="stFWD">OFF</span></div>
+      <div class="signal-row"><div class="signal-dot" id="sigBWD"></div><span class="signal-name">BWD</span><span class="signal-desc">Banda Atras</span><span class="signal-state state-off" id="stBWD">OFF</span></div>
+    </div>
+    <div class="card span2">
+      <div class="card-header"><h3>Proceso &mdash; Ciclo de Produccion</h3><span class="badge badge-idle" id="procBadge">ESPERANDO</span></div>
+      <div class="process-steps" id="processSteps">
+        <span class="step" data-step="0">HOME</span><span class="step-arrow">&rarr;</span>
+        <span class="step" data-step="1">Avance Banda</span><span class="step-arrow">&rarr;</span>
+        <span class="step" data-step="2">Tomar PCB 1</span><span class="step-arrow">&rarr;</span>
+        <span class="step" data-step="3">Depositar Caja 1</span><span class="step-arrow">&rarr;</span>
+        <span class="step" data-step="4">Avance Banda</span><span class="step-arrow">&rarr;</span>
+        <span class="step" data-step="5">Tomar PCB 2</span><span class="step-arrow">&rarr;</span>
+        <span class="step" data-step="6">Depositar Caja 2</span><span class="step-arrow">&rarr;</span>
+        <span class="step" data-step="7">Expulsion</span>
+      </div>
+      <div style="margin-top:14px">
+        <div class="section-title">Estado Banda Transportadora</div>
+        <div class="conveyor-bar" id="conveyorBar"><div class="fill"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+          <span id="conveyorLabel">Detenida</span><span id="conveyorTimer">--</span>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="section-title">Contador de Produccion</div>
+        <div style="display:flex;gap:20px;align-items:center">
+          <div style="text-align:center">
+            <div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--accent)" id="cntPCBs">0</div>
+            <div style="font-size:10px;color:var(--text2)">PCBs Empacadas</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--ok)" id="cntCajas">0</div>
+            <div style="font-size:10px;color:var(--text2)">Cajas Utilizadas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Event Log -->
+  <div class="grid" style="margin-bottom:16px">
+    <div class="card span4">
+      <div class="card-header">
+        <h3>Registro de Eventos</h3>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('logContainer').innerHTML=''">Limpiar</button>
+      </div>
+      <div class="log-container" id="logContainer">
+        <div class="log-entry"><span class="log-time">--:--:--</span><span class="log-type EV">EV</span><span class="log-msg">Esperando conexion al Arduino...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 5: Leyenda / Diagrama -->
+  <div class="grid" style="margin-bottom:16px">
+    <div class="card span2">
+      <div class="card-header"><h3>Diagrama de Conexionado IRC5 &harr; Arduino</h3></div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text2);line-height:1.8">
+        <span style="color:var(--accent)">IRC5 (24V)</span>
+        &nbsp;DO_04 &rarr; 2.2k &rarr; PC817#1 &rarr; <span style="color:var(--ok)">Arduino D2</span><br>
+        &nbsp;DO_06 &rarr; 2.2k &rarr; PC817#2 &rarr; <span style="color:var(--ok)">Arduino D4</span><br>
+        <span style="color:var(--ok)">Arduino D5</span> &rarr; Rele#1 &rarr; <span style="color:var(--accent)">IRC5 DI_04</span> (gripOK)<br>
+        <span style="color:var(--ok)">Arduino D6</span> &rarr; Rele#2 &rarr; <span style="color:var(--accent)">IRC5 DI_05</span> (HOME)<br>
+        <span style="color:var(--ok)">Arduino D7</span> &rarr; Rele#3 &rarr; <span style="color:var(--accent)">IRC5 DI_06</span> (START)<br>
+        <span style="color:var(--ok)">Arduino D9</span> &rarr; <span style="color:var(--warn)">SG90 PWM</span><br>
+        <span style="color:var(--accent2)">LM2596</span> 24V&rarr;5V &rarr; Arduino VIN + SG90 VCC
+      </div>
+    </div>
+    <div class="card span2">
+      <div class="card-header"><h3>Protocolo Serial UART 9600 baud</h3></div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text2);line-height:1.8">
+        <span style="color:var(--accent)">Telemetria (cada 500ms):</span><br>
+        ST,&lt;estado&gt;,&lt;comando&gt;,&lt;angulo&gt;,&lt;gripOK&gt;,&lt;timestamp&gt;<br><br>
+        <span style="color:var(--ok)">Eventos:</span><br>
+        EV,BOOT,... &bull; EV,READY,... &bull; EV,CMD,ABIERTO/CERRADO<br>
+        EV,POS,&lt;ang&gt; &bull; EV,ACK,GRIP_OK/HOME/START<br>
+        EV,FALLA,&lt;bit&gt; &bull; EV,CAL,&lt;n&gt;,&lt;ang&gt;<br><br>
+        <span style="color:var(--warn)">Comandos:</span><br>
+        CMD,HOME &bull; CMD,START &bull; CMD,PING &bull; CMD,CAL,&lt;n&gt;,&lt;ang&gt;<br><br>
+        <span style="color:var(--err)">Errores:</span> ER,CMD_DESCONOCIDO &bull; ER,CAL_INDICE
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+"use strict";
+let port=null,writer=null,reader=null,readLoop=null,connected=false;
+let telemetry={estado:'OK',comando:'ABIERTO',angulo:10,gripOK:1,timestamp:0};
+let cycleCount=0,boxCount=0,startTime=null,currentStep=0;
+const enc=new TextEncoder(),dec=new TextDecoder();
+
+// --- COM Port ---
+async function refreshPorts(){
+  const sel=document.getElementById('comPorts');
+  sel.innerHTML='<option value="">-- Seleccionar COM --</option>';
+  try{const ports=await navigator.serial.getPorts();
+    for(const p of ports){const info=p.getInfo();sel.innerHTML+=`<option value="${info.usbVendorId||''}">${info.usbProductId||'COM'} (VID:${info.usbVendorId||'?'})</option>`}
+  }catch(e){}
+}
+async function toggleConnection(){
+  if(connected){await disconnect();return}
+  try{
+    port=await navigator.serial.requestPort();
+    await port.open({baudRate:9600});
+    writer=port.writable.getWriter();
+    const rs=port.readable;reader=rs.getReader();
+    connected=true;startTime=Date.now();
+    updateConnectionUI(true);
+    startReadLoop();
+    addLog('EV','Conectado al Arduino &bull; 9600 baud');
+  }catch(e){
+    if(e.message!=='No port selected by the user.')addLog('ER','Error conexion: '+e.message);
+  }
+}
+async function disconnect(){
+  connected=false;if(readLoop)cancelAnimationFrame(readLoop);
+  try{if(reader){await reader.cancel();reader.releaseLock();reader=null}}
+  catch(e){}
+  try{if(writer){await writer.close();writer.releaseLock();writer=null}}
+  catch(e){}
+  try{if(port){await port.close();port=null}}catch(e){}
+  updateConnectionUI(false);
+  addLog('EV','Desconectado');
+}
+function updateConnectionUI(on){
+  document.getElementById('connDot').className='conn-dot'+(on?' on':'');
+  document.getElementById('connLabel').textContent=on?'Conectado &bull; 9600 baud':'Desconectado';
+  document.getElementById('btnConnect').textContent=on?'Desconectar':'Conectar';
+  document.getElementById('btnConnect').className='btn '+(on?'btn-outline':'btn-primary')+' btn-sm';
+  document.getElementById('gripBadge').textContent=on?'VIVO':'SIN CONEXION';
+  document.getElementById('gripBadge').className=on?'badge badge-live':'badge badge-idle';
+}
+function addLog(type,msg){
+  const c=document.getElementById('logContainer');
+  const t=new Date().toLocaleTimeString('es-CO',{hour12:false});
+  c.innerHTML+=`<div class="log-entry"><span class="log-time">${t}</span><span class="log-type ${type}">${type}</span><span class="log-msg">${msg}</span></div>`;
+  c.scrollTop=c.scrollHeight;
+}
+
+// --- Send command ---
+async function sendCmd(cmd){
+  if(!connected||!writer){addLog('ER','No conectado');return}
+  try{
+    await writer.write(enc.encode(cmd+'\n'));
+    addLog('CMD',cmd);
+    if(cmd==='CMD,START'){cycleCount++;document.getElementById('kpiCycles').textContent=cycleCount}
+  }catch(e){addLog('ER','Error enviando: '+e.message)}
+}
+
+// --- Read loop ---
+async function startReadLoop(){
+  let buf='';
+  while(connected&&reader){
+    try{const{value,done}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      let nl;while((nl=buf.indexOf('\n'))!==-1){
+        const line=buf.substring(0,nl).trim();buf=buf.substring(nl+1);
+        if(line)processLine(line);
+      }
+    }catch(e){if(connected){addLog('ER','Error lectura: '+e.message);break}}
+  }
+  if(connected){disconnect()}
+}
+function processLine(line){
+  const parts=line.split(',');
+  const type=parts[0];
+  if(type==='ST'){
+    telemetry.estado=parts[1]||'OK';
+    telemetry.comando=parts[2]||'ABIERTO';
+    telemetry.angulo=parseInt(parts[3])||0;
+    telemetry.gripOK=parseInt(parts[4])||0;
+    telemetry.timestamp=parts[5]||'0';
+    updateTelemetry();
+  }else if(type==='EV'){
+    addLog('EV',parts.slice(1).join(','));
+    if(parts[1]==='CMD')updateGripperState(parts[2]==='CERRADO');
+    else if(parts[1]==='ACK'&&parts[2]==='GRIP_OK')updateGripOK(true);
+    else if(parts[1]==='FALLA')updateFault(parts[2]==='1');
+    else if(parts[1]==='POS'){telemetry.angulo=parseInt(parts[2])||0;updateTelemetry()}
+    else if(parts[1]==='BOOT')addLog('EV','Arduino iniciado');
+    else if(parts[1]==='READY')addLog('EV','Arduino listo');
+  }else if(type==='ER'){
+    addLog('ER',parts.slice(1).join(','));
+  }
+}
+
+// --- Update UI ---
+function updateTelemetry(){
+  const a=telemetry.angulo;
+  document.getElementById('kpiAngle').textContent=a+'°';
+  document.getElementById('kpiStatus').textContent=telemetry.estado==='FALLA'?'FALLA':'OK';
+  document.getElementById('kpiStatus').className='telem-value'+(telemetry.estado==='FALLA'?' danger':'');
+  document.getElementById('dialVal').textContent=a+'°';
+  // Update dial
+  const ratio=Math.min(Math.max(a/180,0),1);
+  const circumference=339.292;
+  document.getElementById('dialFg').style.strokeDashoffset=circumference*(1-ratio);
+  // Angle label
+  document.getElementById('gripperAngleLabel').textContent=(a<=20?'Abierto':a>=80?'Cerrado':'Intermedio')+' &bull; '+a+'°';
+  // Uptime
+  if(startTime){
+    const d=Math.floor((Date.now()-startTime)/1000);
+    const m=Math.floor(d/60),s=d%60;
+    document.getElementById('kpiUptime').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  }
+}
+function updateGripperState(closed){
+  const jaws=document.querySelectorAll('.gripper-jaw');
+  const pcb=document.getElementById('gripperPcb');
+  const label=document.getElementById('gripperAngleLabel');
+  if(closed){
+    jaws.forEach(j=>j.classList.add('closed'));
+    pcb.classList.add('visible');
+    label.style.color='var(--warn)';
+  }else{
+    jaws.forEach(j=>j.classList.remove('closed'));
+    pcb.classList.remove('visible');
+    label.style.color='var(--ok)';
+  }
+  // Signal lights
+  document.getElementById('sigDO04').className='signal-dot'+(closed?' high':'');
+  document.getElementById('stDO04').textContent=closed?'ON':'OFF';
+  document.getElementById('stDO04').className='signal-state '+(closed?'state-on':'state-off');
+}
+function updateGripOK(ok){
+  document.getElementById('sigDI04').className='signal-dot'+(ok?' ok':'');
+  document.getElementById('stDI04').textContent=ok?'ON':'OFF';
+  document.getElementById('stDI04').className='signal-state '+(ok?'state-on':'state-off');
+}
+function updateFault(fault){
+  document.getElementById('sigDO06').className='signal-dot'+(fault?' warn':'');
+  document.getElementById('stDO06').textContent=fault?'ON':'OFF';
+  document.getElementById('stDO06').className='signal-state '+(fault?'state-on':'state-off');
+  if(fault){document.getElementById('kpiStatus').textContent='FALLA';document.getElementById('kpiStatus').className='telem-value danger'}
+}
+
+// --- Process step simulation (visual only) ---
+let stepInterval=null;
+function advanceStep(step){
+  const steps=document.querySelectorAll('.step');
+  steps.forEach((s,i)=>{s.classList.remove('active','done');if(i<step)s.classList.add('done')});
+  if(steps[step])steps[step].classList.add('active');
+  currentStep=step;
+  const badge=document.getElementById('procBadge');
+  const names=['HOME','Avance Banda','Tomando PCB 1','Depositando','Avance Banda','Tomando PCB 2','Depositando','Expulsion'];
+  badge.textContent=names[step]||'ESPERANDO';
+  // Conveyor
+  const moving=[1,4,7].includes(step);
+  document.getElementById('conveyorBar').className='conveyor-bar'+(moving?' moving':'');
+  document.getElementById('conveyorLabel').textContent=moving?'En movimiento':'Detenida';
+}
+
+// --- Simulate demo when no Arduino connected ---
+let demoInterval=null;
+function startDemo(){
+  if(demoInterval)return;
+  let angle=10,closed=false,step=0;
+  demoInterval=setInterval(()=>{
+    if(connected){stopDemo();return}
+    // Cycle through demo
+    if(!closed){
+      angle=Math.min(angle+5,100);if(angle>=100)closed=true;
+    }else{
+      angle=Math.max(angle-5,10);if(angle<=10)closed=false;
+    }
+    telemetry.angulo=angle;
+    telemetry.comando=closed?'CERRADO':'ABIERTO';
+    telemetry.gripOK=angle===10||angle===100?1:0;
+    telemetry.estado='OK';
+    updateTelemetry();
+    updateGripperState(closed);
+    updateGripOK(telemetry.gripOK===1);
+    // Advance step
+    if(closed&&angle===100&&step===0){advanceStep(2);step=2}
+    if(!closed&&angle===10&&step===2){advanceStep(3);step=3;boxCount++;document.getElementById('cntCajas').textContent=boxCount;document.getElementById('cntPCBs').textContent=boxCount}
+    if(closed&&angle===100&&step===3){advanceStep(5);step=5}
+    if(!closed&&angle===10&&step===5){advanceStep(6);step=6;boxCount++;document.getElementById('cntCajas').textContent=boxCount;document.getElementById('cntPCBs').textContent=boxCount}
+    if(!closed&&angle===10&&step===6){advanceStep(0);step=0;cycleCount++;document.getElementById('kpiCycles').textContent=cycleCount}
+    if(step===0)advanceStep(0);
+  },1200);
+}
+function stopDemo(){if(demoInterval){clearInterval(demoInterval);demoInterval=null}}
+
+// --- Init ---
+refreshPorts();startDemo();
+document.getElementById('calOpen').addEventListener('input',function(){
+  document.getElementById('calOpenVal').textContent=this.value;
+});
+document.getElementById('calClose').addEventListener('input',function(){
+  document.getElementById('calCloseVal').textContent=this.value;
+});
+advanceStep(0);
+</script>
+</body>
+</html>

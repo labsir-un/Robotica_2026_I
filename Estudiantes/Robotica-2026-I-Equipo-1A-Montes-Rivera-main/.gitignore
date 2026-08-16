@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ROS 2 build directories
+build/
+install/
+log/
+
+# OS metadata
+.DS_Store
+.directory
+Thumbs.db

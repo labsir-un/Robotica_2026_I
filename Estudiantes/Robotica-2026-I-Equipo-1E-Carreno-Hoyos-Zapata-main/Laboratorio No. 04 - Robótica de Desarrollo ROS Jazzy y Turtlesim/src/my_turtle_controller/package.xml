@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>my_turtle_controller</name>
+  <version>1.0.0</version>
+  <description>
+    Controlador de turtlesim con teclado, trayectorias automáticas, dibujo de
+    letras y sistema líder-seguidor con dos tortugas.
+    Laboratorio 04 · Robótica 2026-I · UNAL
+  </description>
+
+  <maintainer email="jzapatapi@unal.edu.co">Jose Andres Zapata Piñeros</maintainer>
+  <maintainer email="jacarrenor@unal.edu.co">Janan Libardo Carreño Riaño</maintainer>
+  <maintainer email="Crhoyosp@unal.edu.co">Cristian Stiven Hoyos Peralta</maintainer>
+
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>geometry_msgs</depend>
+  <depend>turtlesim</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
