@@ -1,2 +1,0 @@
-config_id,q1_waist_deg,q2_shoulder_deg,q3_elbow_deg,q4_wrist_deg,q5_gripper_deg,x_m,y_m,z_m,roll_deg,pitch_deg,yaw_deg,x_rviz_m,y_rviz_m,z_rviz_m,roll_rviz_deg,pitch_rviz_deg,yaw_rviz_deg,position_error_m
-1,0.0,0.0,0.0,0.0,0.0,0.031500000000000014,-1.965558112631502e-17,0.41045,0.0,-6.6889093307309555e-15,-180.0,0.027086198959912954,0.00013863562517392653,0.4107412193606556,-1.0872318166786133e-17,0.879765395894413,-179.7067448680352,0.004425569813488616
